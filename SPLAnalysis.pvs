@@ -1,0 +1,71 @@
+
+SPLAnalysis  [(IMPORTING DProduct) Product: TYPE FROM DProduct, Property: TYPE FROM [bool+real]] : THEORY
+
+  BEGIN
+
+     % Data part
+
+     %IMPORTING ConfigurationSpace, AnnotativeModel
+
+     % should all be finite types
+     FeatureModel: TYPE+
+     Configuration: TYPE+
+
+     %should we name it Dimension cf. Choice Calculus? - Sven
+     Variables: TYPE+
+
+      %Annotative Model is a superset of Product including  optional presence
+      %conditions to annotate model elements.
+     AnnotativeModel : DATATYPE
+       BEGIN
+         core (p:Product): core?
+         variationPoint (variable: Variables ,
+                         mTrue: AnnotativeModel ,
+     	  	         mFalse: AnnotativeModel): variationPoint?
+     	 variableAsset (vam: list[AnnotativeModel]):variableAsset?
+       END AnnotativeModel
+     
+     PresenceFunction: TYPE = [Variables->[Configuration->bool]]
+     AnnotativeProductLine: TYPE = [# fm: FeatureModel,
+                                      pf: PresenceFunction,
+				      am: AnnotativeModel  #]
+
+
+     % derivation by projection
+     pi (conf: Configuration) ( apl: AnnotativeProductLine): RECURSIVE  Product =
+        CASES am(apl) OF
+	        core(p): p,
+	        variationPoint (v,vTrue,vFalse): IF (pf(apl)) (v)(conf)
+		                                     THEN pi(conf) (apl WITH [am := vTrue])
+						     ELSE pi(conf) (apl WITH [am := vFalse])
+						  ENDIF,
+		variableAsset(va): product(map ( pi (conf),
+		                                 map((lambda (x:AnnotativeModel): apl WITH [am := x]) , va)
+					       )
+					  )
+        ENDCASES
+     MEASURE am(apl) BY  <<
+     % @lmt: please check the measure above
+
+     % Analysis part
+
+     % Variability-free analysis that performs the computation of the property
+     alpha: [Product -> Property]
+
+     % we could interpret this at some ponint - Sven
+     AnnotativeExpression: TYPE+
+
+     % we could interpret this at some point and relate with alpha (would be a great result!) - Sven
+     hatAlpha: [AnnotativeModel -> AnnotativeExpression]
+
+     %we could detail sigma at some point - Sven
+     sigma: [Configuration, AnnotativeExpression -> Property]
+    
+     conf: VAR Configuration
+     annSpl: VAR AnnotativeProductLine
+
+     % Property corresponding to Theorem 1 in the SCP paper
+     commutative_product_family_product: AXIOM sigma (conf,hatAlpha(am(annSpl))) = alpha (pi(conf)(annSpl))
+
+
+  END SPLAnalysis
