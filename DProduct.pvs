@@ -1,6 +1,0 @@
-DProduct : DATATYPE
-
-  BEGIN
-     empty: empty?
-     product (elements:list[DProduct]): product?
-  END DProduct
