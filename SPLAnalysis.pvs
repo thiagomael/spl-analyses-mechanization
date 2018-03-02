@@ -2,7 +2,6 @@
 SPLAnalysis  [(IMPORTING DProduct) Product: TYPE FROM DProduct, Property: TYPE FROM [bool+real]] : THEORY
 
   BEGIN
-
      % Data part
 
      %IMPORTING ConfigurationSpace, AnnotativeModel
@@ -28,7 +27,11 @@ SPLAnalysis  [(IMPORTING DProduct) Product: TYPE FROM DProduct, Property: TYPE F
      PresenceFunction: TYPE = [Variables->[Configuration->bool]]
      AnnotativeProductLine: TYPE = [# fm: FeatureModel,
                                       pf: PresenceFunction,
-				      am: AnnotativeModel  #]
+				      am: AnnotativeModel #]
+
+
+
+     IMPORTING structures@more_list_props[AnnotativeModel]
 
 
      % derivation by projection
@@ -39,8 +42,8 @@ SPLAnalysis  [(IMPORTING DProduct) Product: TYPE FROM DProduct, Property: TYPE F
 		                                     THEN pi(conf) (apl WITH [am := vTrue])
 						     ELSE pi(conf) (apl WITH [am := vFalse])
 						  ENDIF,
-		variableAsset(va): product(map ( pi (conf),
-		                                 map((lambda (x:AnnotativeModel): apl WITH [am := x]) , va)
+		variableAsset(va): product(map ( LAMBDA (apl2: {a: AnnotativeProductLine | member(a`am, va) }): pi(conf)(apl2),
+		                                 map((lambda (x:AnnotativeModel): apl WITH [am := x]), va)
 					       )
 					  )
         ENDCASES
@@ -57,6 +60,14 @@ SPLAnalysis  [(IMPORTING DProduct) Product: TYPE FROM DProduct, Property: TYPE F
 
      % we could interpret this at some point and relate with alpha (would be a great result!) - Sven
      hatAlpha: [AnnotativeModel -> AnnotativeExpression]
+
+% IDEA:
+     %AnnotativeProductLine[T: TYPE]: TYPE = [# fm: FeatureModel,
+     %                                          pf: PresenceFunction,
+     % 				                am: T  #]
+     %AnnotativeProductLine[AnnotativeModel]
+     %AnnotativeProductLine[AnnotativeExpression]
+     %superhat_alpha: [APL[AnnotativeModel] -> APL[AnnotativeExpression]] = (fmap hatAlpha)
 
      %we could detail sigma at some point - Sven
      sigma: [Configuration, AnnotativeExpression -> Property]
