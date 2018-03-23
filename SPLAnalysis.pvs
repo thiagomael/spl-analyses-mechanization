@@ -84,12 +84,20 @@ SPLAnalysis  [(IMPORTING DProduct) Product: TYPE FROM DProduct, Property: TYPE F
      % Property corresponding to Theorem 1 in the SCP paper
      commutative_product_family_product: AXIOM sigma (conf,hatAlpha(am(annSpl))) = alpha (pi(conf)(annSpl))
 
+
+
++% IDEA:
++     %AnnotativeProductLine[T: TYPE]: TYPE = [# fm: FeatureModel,
++     %                                          pf: PresenceFunction,
++     % 				                am: T  #]
++     %AnnotativeProductLine[AnnotativeModel]
++     %AnnotativeProductLine[AnnotativeExpression]
++     %superhat_alpha: [APL[AnnotativeModel] -> APL[AnnotativeExpression]] = (fmap hatAlpha)
+
+
+
+
+
   END SPLAnalysis
 
-%list [T: TYPE]: DATATYPE 
-%
-% BEGIN
-%  null: null?
-%  cons (car: T, cdr:list):cons?
 
-% END list
