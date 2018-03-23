@@ -2,10 +2,7 @@
 SPLAnalysis  [(IMPORTING DProduct) Product: TYPE FROM DProduct, Property: TYPE FROM [bool+real]] : THEORY
 
   BEGIN
-
      % Data part
-
-     %IMPORTING ConfigurationSpace, AnnotativeModel
 
      % should all be finite types
      FeatureModel: TYPE+
@@ -22,14 +19,14 @@ SPLAnalysis  [(IMPORTING DProduct) Product: TYPE FROM DProduct, Property: TYPE F
          variationPoint (variable: Variables ,
                          mTrue: AnnotativeModel ,
      	  	         mFalse: AnnotativeModel): variationPoint?
-     	 variableAsset (vam: list[AnnotativeModel]):variableAsset?
+     	 vComposite (am1, am2: AnnotativeModel): vComposite?
        END AnnotativeModel
-     
+       
+     PresenceCondition: TYPE = [Configuration -> bool]
      PresenceFunction: TYPE = [Variables->[Configuration->bool]]
      AnnotativeProductLine: TYPE = [# fm: FeatureModel,
                                       pf: PresenceFunction,
 				      am: AnnotativeModel  #]
-
 
      % derivation by projection
      pi (conf: Configuration) ( apl: AnnotativeProductLine): RECURSIVE  Product =
@@ -39,24 +36,44 @@ SPLAnalysis  [(IMPORTING DProduct) Product: TYPE FROM DProduct, Property: TYPE F
 		                                     THEN pi(conf) (apl WITH [am := vTrue])
 						     ELSE pi(conf) (apl WITH [am := vFalse])
 						  ENDIF,
-		variableAsset(va): product(map ( pi (conf),
-		                                 map((lambda (x:AnnotativeModel): apl WITH [am := x]) , va)
-					       )
-					  )
+		vComposite (am1,am2): composite( pi (conf) (apl WITH [am := am1]),
+		                                 pi (conf) (apl WITH [am := am2]))
         ENDCASES
      MEASURE am(apl) BY  <<
      % @lmt: please check the measure above
 
      % Analysis part
 
+     p_bottom: Property
+     alpha_c_: [[Property, Property] -> Property]
+ %   alpha_c_(p1, p2: Property): Property
+
      % Variability-free analysis that performs the computation of the property
-     alpha: [Product -> Property]
+     alpha(p: Product): RECURSIVE Property =
+         CASES p OF
+           basic: p_bottom,
+           composite(p1, p2): alpha_c_(alpha(p1), alpha(p2))
+         ENDCASES
 
      % we could interpret this at some ponint - Sven
-     AnnotativeExpression: TYPE+
+    % AnnotativeExpression: [PresenceCondition -> Property]
+      AnnotativeExpression: TYPE  = list [[PresenceCondition, Property]]
 
-     % we could interpret this at some point and relate with alpha (would be a great result!) - Sven
-     hatAlpha: [AnnotativeModel -> AnnotativeExpression]
+     hatAlpha (am: AnnotativeModel): RECURSIVE AnnotativeExpression =
+        CASES am OF
+	   core(product):  (: TRUE, alpha (product) :)
+	   
+	   variationPoint (pc: PresenceCondition, mTrue: AnnotativeModel, mFalse: AnnotativeModel):
+	        mADD( mAND (pc, hatAlpha (mTrue)),
+		      mAND (NOT pc, hatAlpha (mFalse))
+		    )
+		    
+     	   vComposite (am1, am2: AnnotativeModel): xmap (alpha_c_) (hatAlpha (am1)) (hatAlpha (am2))
+	     WHERE
+	          mMul ae1 ae2 = [ (: (pc1 AND pc2), (:v1,v2:) :) | (:pc1,v1:) <- ae1, (:pc2,v2:) <- ae2 ]
+	          xmap g s1 s2 = map (LAMBDA (: pc, (: v1,v2 :) :): (: pc, g (v1,v2) :) (mMul (s1,s2))
+	          mAND prc ae = map ( LAMBDA ( (: pc,v :) ): (: (prc AND pc), v :) )  ae
+		  mADD ae1 ae2 = union (ae1, ae2)
 
      %we could detail sigma at some point - Sven
      sigma: [Configuration, AnnotativeExpression -> Property]
@@ -67,5 +84,12 @@ SPLAnalysis  [(IMPORTING DProduct) Product: TYPE FROM DProduct, Property: TYPE F
      % Property corresponding to Theorem 1 in the SCP paper
      commutative_product_family_product: AXIOM sigma (conf,hatAlpha(am(annSpl))) = alpha (pi(conf)(annSpl))
 
-
   END SPLAnalysis
+
+%list [T: TYPE]: DATATYPE 
+%
+% BEGIN
+%  null: null?
+%  cons (car: T, cdr:list):cons?
+
+% END list

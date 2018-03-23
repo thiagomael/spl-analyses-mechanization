@@ -1,6 +1,12 @@
 DProduct : DATATYPE
 
   BEGIN
-     empty: empty?
-     product (elements:list[DProduct]): product?
+     basic: basic?
+     composite (p1,p2: DProduct): composite?
   END DProduct
+
+
+% Product: DATATYPE
+%         empty: empty?
+%         C(p1, p2: Product): C?
+%     END Product
