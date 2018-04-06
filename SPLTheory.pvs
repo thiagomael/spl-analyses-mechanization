@@ -1,0 +1,90 @@
+SPLTheory : THEORY
+
+BEGIN
+
+  Model : DATATYPE
+  BEGIN
+     basic: basic?
+     composite (m1,m2: Model): composite?
+  END Model
+
+  complexity(m: Model): nat =
+    reduce_nat(0,
+       LAMBDA (n: nat, m: nat): n + m + 1)(m)
+
+
+  Property: TYPE FROM [bool+real]
+  p_bottom: Property
+
+  AnalyzeModelCompositeShell: TYPE = [[Property, Property] -> Property]
+  analyzeModelCompositeShell: [[Property, Property] -> Property]
+
+
+  analyzeModel(m: Model) : RECURSIVE Property =
+    CASES m OF
+       basic: p_bottom,
+       composite(m1, m2): analyzeModelCompositeShell(analyzeModel(m1), analyzeModel(m2))
+    ENDCASES
+    MEASURE m by <<
+%    MEASURE complexity(m)
+
+  Option: TYPE+
+  Conf: TYPE = set[Option]
+
+  VarModel : DATATYPE
+  BEGIN
+     ModelBase(m:Model): ModelBase?
+     ModelChoice(o:Option, vm1:VarModel, vm2:VarModel): ModelChoice?
+     ModelComposite (vm1,vm2: VarModel): ModelComposite?
+  END VarModel
+
+  projectModel(vm:VarModel,c:Conf): RECURSIVE Model =
+    CASES vm OF
+      ModelBase(m): m,
+      ModelChoice(o, vm1, vm2):
+        IF c(o) THEN
+	   projectModel(vm1,c)
+	ELSE
+	   projectModel(vm2,c)
+	ENDIF,
+      ModelComposite(vm1, vm2):
+	   composite(projectModel(vm1,c),projectModel(vm2,c))
+    ENDCASES
+    MEASURE vm by <<
+
+  VarProperty : DATATYPE
+  BEGIN
+     PropertyBase(p:Property): PropertyBase?
+     PropertyChoice(o:Option, vp1:VarProperty, vp2:VarProperty): PropertyChoice?
+     PropertyComposite (amcs: AnalyzeModelCompositeShell, vp1:VarProperty, vp2:VarProperty): PropertyComposite?
+  END VarProperty  
+
+
+  varJoinProperty(o:Option, vp1:VarProperty, vp2:VarProperty): VarProperty =
+    PropertyChoice(o,vp1,vp2)
+
+  varCompositeProperty(vp1:VarProperty, vp2:VarProperty): VarProperty %=
+%    PropertyComposite(??,vp1,vp2)
+
+  projectProperty(vp:VarProperty,c:Conf): RECURSIVE Property =
+    CASES vp OF
+      PropertyBase(p): p,
+      PropertyChoice(o, vp1, vp2):
+        IF c(o) THEN
+	   projectProperty(vp1,c)
+	ELSE
+	   projectProperty(vp2,c)
+	ENDIF,
+      PropertyComposite(analysisShell, vp1, vp2): p_bottom
+	   %analysisShell(projectProperty(vp1,c), projectProperty(vp2,c))
+    ENDCASES
+    MEASURE vp by <<
+
+  varAnalyzeModel(vm:VarModel): RECURSIVE VarProperty =
+    CASES vm OF
+      ModelBase(m): PropertyBase(analyzeModel(m)),
+      ModelChoice(o, vm1, vm2): varJoinProperty( o, varAnalyzeModel(vm1), varAnalyzeModel(vm2) ),
+      ModelComposite(vm1, vm2): varCompositeProperty( varAnalyzeModel(vm1), varAnalyzeModel(vm2) )
+    ENDCASES
+    MEASURE vm by <<
+ END SPLTheory
