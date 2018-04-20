@@ -1,5 +1,4 @@
 SPLTheory : THEORY
-
 BEGIN
 
   Model : DATATYPE
@@ -8,17 +7,11 @@ BEGIN
      composite (m1,m2: Model): composite?
   END Model
 
-  complexity(m: Model): nat =
-    reduce_nat(0,
-       LAMBDA (n: nat, m: nat): n + m + 1)(m)
-
-
-  Property: TYPE FROM [bool+real]
+  Property: TYPE+ FROM [bool+real]
   p_bottom: Property
 
   AnalyzeModelCompositeShell: TYPE = [Property, Property -> Property]
   analyzeModelCompositeShell: AnalyzeModelCompositeShell
-
 
   analyzeModel(m: Model) : RECURSIVE Property =
     CASES m OF
@@ -26,7 +19,6 @@ BEGIN
        composite(m1, m2): analyzeModelCompositeShell(analyzeModel(m1), analyzeModel(m2))
     ENDCASES
     MEASURE m by <<
-%    MEASURE complexity(m)
 
   Option: TYPE+
   Conf: TYPE = set[Option]
@@ -58,7 +50,6 @@ BEGIN
      PropertyChoice(o:Option, vp1:VarProperty, vp2:VarProperty): PropertyChoice?
      PropertyComposite (amcs: AnalyzeModelCompositeShell, vp1:VarProperty, vp2:VarProperty): PropertyComposite?
   END VarProperty  
-
 
   varJoinProperty(o:Option, vp1:VarProperty, vp2:VarProperty): VarProperty =
     PropertyChoice(o,vp1,vp2)
