@@ -16,8 +16,8 @@ BEGIN
   Property: TYPE FROM [bool+real]
   p_bottom: Property
 
-  AnalyzeModelCompositeShell: TYPE = [[Property, Property] -> Property]
-  analyzeModelCompositeShell: [[Property, Property] -> Property]
+  AnalyzeModelCompositeShell: TYPE = [Property, Property -> Property]
+  analyzeModelCompositeShell: AnalyzeModelCompositeShell
 
 
   analyzeModel(m: Model) : RECURSIVE Property =
@@ -63,8 +63,8 @@ BEGIN
   varJoinProperty(o:Option, vp1:VarProperty, vp2:VarProperty): VarProperty =
     PropertyChoice(o,vp1,vp2)
 
-  varCompositeProperty(vp1:VarProperty, vp2:VarProperty): VarProperty %=
-%    PropertyComposite(??,vp1,vp2)
+  varCompositeProperty(vp1:VarProperty, vp2:VarProperty): VarProperty =
+    PropertyComposite(analyzeModelCompositeShell,vp1,vp2)
 
   projectProperty(vp:VarProperty,c:Conf): RECURSIVE Property =
     CASES vp OF
@@ -75,8 +75,8 @@ BEGIN
 	ELSE
 	   projectProperty(vp2,c)
 	ENDIF,
-      PropertyComposite(analysisShell, vp1, vp2): p_bottom
-	   %analysisShell(projectProperty(vp1,c), projectProperty(vp2,c))
+      PropertyComposite(analysisShell, vp1, vp2): 
+	   analysisShell(projectProperty(vp1,c), projectProperty(vp2,c))
     ENDCASES
     MEASURE vp by <<
 
