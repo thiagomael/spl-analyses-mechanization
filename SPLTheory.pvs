@@ -13,6 +13,7 @@ BEGIN
   AnalyzeModelCompositeShell: TYPE = [Property, Property -> Property]
   analyzeModelCompositeShell: AnalyzeModelCompositeShell
 
+  %alpha
   analyzeModel(m: Model) : RECURSIVE Property =
     CASES m OF
        basic: p_bottom,
@@ -78,4 +79,22 @@ BEGIN
       ModelComposite(vm1, vm2): varCompositeProperty( varAnalyzeModel(vm1), varAnalyzeModel(vm2) )
     ENDCASES
     MEASURE vm by <<
- END SPLTheory
+
+
+%  FeatureModel: TYPE+
+  %should we name it Dimension cf. Choice Calculus? - Sven
+%  Variables: TYPE+
+%  PresenceCondition: TYPE = [Conf -> bool]
+%  PresenceFunction: TYPE = [Variables->[Configuration->bool]]
+%   AnnotativeProductLine: TYPE = [# fm: FeatureModel,
+%                                      pf: PresenceFunction,
+%				      am: AnnotativeModel  #]
+
+
+  conf: VAR Conf
+%  annSpl: VAR AnnotativeProductLine
+  vModel : VAR VarModel
+  commutative_product_family_product: THEOREM projectProperty(varAnalyzeModel(vModel),conf) = analyzeModel(projectModel(vModel,conf))
+
+
+END SPLTheory
