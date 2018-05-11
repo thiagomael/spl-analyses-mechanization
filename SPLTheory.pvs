@@ -1,11 +1,11 @@
 SPLTheory : THEORY
 BEGIN
 
-  Model : DATATYPE
+  Product : DATATYPE
   BEGIN
      basic: basic?
-     composite (m1,m2: Model): composite?
-  END Model
+     composite (m1,m2: Product): composite?
+  END Product
 
   Property: TYPE+ FROM [bool+real]
   p_bottom: Property
@@ -13,88 +13,69 @@ BEGIN
   AnalyzeModelCompositeShell: TYPE = [Property, Property -> Property]
   analyzeModelCompositeShell: AnalyzeModelCompositeShell
 
-  %alpha
-  analyzeModel(m: Model) : RECURSIVE Property =
+  alpha(m: Product) : RECURSIVE Property =
     CASES m OF
        basic: p_bottom,
-       composite(m1, m2): analyzeModelCompositeShell(analyzeModel(m1), analyzeModel(m2))
+       composite(m1, m2): analyzeModelCompositeShell(alpha(m1), alpha(m2))
     ENDCASES
     MEASURE m by <<
 
-  Option: TYPE+
-  Conf: TYPE = set[Option]
+  PresenceCondition: TYPE+
+  Conf: TYPE = set[PresenceCondition]
 
-  VarModel : DATATYPE
+  AnnotativeModel : DATATYPE
   BEGIN
-     ModelBase(m:Model): ModelBase?
-     ModelChoice(o:Option, vm1:VarModel, vm2:VarModel): ModelChoice?
-     ModelComposite (vm1,vm2: VarModel): ModelComposite?
-  END VarModel
+     ModelBase(m:Product): ModelBase?
+     ModelChoice(pc:PresenceCondition, vm1:AnnotativeModel, vm2:AnnotativeModel): ModelChoice?
+     ModelComposite (vm1,vm2: AnnotativeModel): ModelComposite?
+  END AnnotativeModel
 
-  projectModel(vm:VarModel,c:Conf): RECURSIVE Model =
+  pi(vm:AnnotativeModel,c:Conf): RECURSIVE Product =
     CASES vm OF
       ModelBase(m): m,
-      ModelChoice(o, vm1, vm2):
-        IF c(o) THEN
-	   projectModel(vm1,c)
+      ModelChoice(pc, vm1, vm2):
+        IF c(pc) THEN
+	   pi(vm1,c)
 	ELSE
-	   projectModel(vm2,c)
+	   pi(vm2,c)
 	ENDIF,
       ModelComposite(vm1, vm2):
-	   composite(projectModel(vm1,c),projectModel(vm2,c))
+	   composite(pi(vm1,c),pi(vm2,c))
     ENDCASES
     MEASURE vm by <<
 
-  VarProperty : DATATYPE
+  AnnotativeExpression : DATATYPE
   BEGIN
-     PropertyBase(p:Property): PropertyBase?
-     PropertyChoice(o:Option, vp1:VarProperty, vp2:VarProperty): PropertyChoice?
-     PropertyComposite (amcs: AnalyzeModelCompositeShell, vp1:VarProperty, vp2:VarProperty): PropertyComposite?
-  END VarProperty  
+     BaseExpression(p:Property): BaseExpression?
+     ChoiceExpression(pc:PresenceCondition, vp1:AnnotativeExpression, vp2:AnnotativeExpression): ChoiceExpression?
+     CompositeExpression (analysisShell: AnalyzeModelCompositeShell, vp1:AnnotativeExpression, vp2:AnnotativeExpression): CompositeExpression?
+  END AnnotativeExpression  
 
-  varJoinProperty(o:Option, vp1:VarProperty, vp2:VarProperty): VarProperty =
-    PropertyChoice(o,vp1,vp2)
-
-  varCompositeProperty(vp1:VarProperty, vp2:VarProperty): VarProperty =
-    PropertyComposite(analyzeModelCompositeShell,vp1,vp2)
-
-  projectProperty(vp:VarProperty,c:Conf): RECURSIVE Property =
+  sigma(vp:AnnotativeExpression,c:Conf): RECURSIVE Property =
     CASES vp OF
-      PropertyBase(p): p,
-      PropertyChoice(o, vp1, vp2):
-        IF c(o) THEN
-	   projectProperty(vp1,c)
+      BaseExpression(p): p,
+      ChoiceExpression(pc, vp1, vp2):
+        IF c(pc) THEN
+	   sigma(vp1,c)
 	ELSE
-	   projectProperty(vp2,c)
+	   sigma(vp2,c)
 	ENDIF,
-      PropertyComposite(analysisShell, vp1, vp2): 
-	   analysisShell(projectProperty(vp1,c), projectProperty(vp2,c))
+      CompositeExpression(analysisShell, vp1, vp2): 
+	   analysisShell(sigma(vp1,c), sigma(vp2,c))
     ENDCASES
     MEASURE vp by <<
 
-  varAnalyzeModel(vm:VarModel): RECURSIVE VarProperty =
+  hatAlpha(vm:AnnotativeModel): RECURSIVE AnnotativeExpression =
     CASES vm OF
-      ModelBase(m): PropertyBase(analyzeModel(m)),
-      ModelChoice(o, vm1, vm2): varJoinProperty( o, varAnalyzeModel(vm1), varAnalyzeModel(vm2) ),
-      ModelComposite(vm1, vm2): varCompositeProperty( varAnalyzeModel(vm1), varAnalyzeModel(vm2) )
+      ModelBase(m): BaseExpression(alpha(m)),
+      ModelChoice(pc, vm1, vm2): ChoiceExpression( pc, hatAlpha(vm1), hatAlpha(vm2) ),
+      ModelComposite(vm1, vm2): CompositeExpression(analyzeModelCompositeShell, hatAlpha(vm1), hatAlpha(vm2) )
     ENDCASES
     MEASURE vm by <<
 
-
-%  FeatureModel: TYPE+
-  %should we name it Dimension cf. Choice Calculus? - Sven
-%  Variables: TYPE+
-%  PresenceCondition: TYPE = [Conf -> bool]
-%  PresenceFunction: TYPE = [Variables->[Configuration->bool]]
-%   AnnotativeProductLine: TYPE = [# fm: FeatureModel,
-%                                      pf: PresenceFunction,
-%				      am: AnnotativeModel  #]
-
-
   conf: VAR Conf
-%  annSpl: VAR AnnotativeProductLine
-  vModel : VAR VarModel
-  commutative_product_family_product: THEOREM projectProperty(varAnalyzeModel(vModel),conf) = analyzeModel(projectModel(vModel,conf))
+  vModel : VAR AnnotativeModel
+  commutative_product_family_product: THEOREM sigma(hatAlpha(vModel),conf) = alpha(pi(vModel,conf))
 
 
 END SPLTheory
