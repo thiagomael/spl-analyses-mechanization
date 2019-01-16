@@ -1,24 +1,10 @@
 SPLTheory : THEORY
 BEGIN
 
-  Product : DATATYPE
-  BEGIN
-     basic: basic?
-     composite (m1,m2: Product): composite?
-  END Product
+  Product : TYPE+
+  Property: TYPE+
 
-  Property: TYPE+ FROM [bool+real]
-  p_bottom: Property
-
-  AnalyzeModelCompositeShell: TYPE = [Property, Property -> Property]
-  analyzeModelCompositeShell: AnalyzeModelCompositeShell
-
-  alpha(m: Product) : RECURSIVE Property =
-    CASES m OF
-       basic: p_bottom,
-       composite(m1, m2): analyzeModelCompositeShell(alpha(m1), alpha(m2))
-    ENDCASES
-    MEASURE m by <<
+  alpha: [Product -> Property]
 
   PresenceCondition: TYPE+
   Conf: TYPE = set[PresenceCondition]
@@ -27,7 +13,6 @@ BEGIN
   BEGIN
      ModelBase(m:Product): ModelBase?
      ModelChoice(pc:PresenceCondition, vm1:AnnotativeModel, vm2:AnnotativeModel): ModelChoice?
-     ModelComposite (vm1,vm2: AnnotativeModel): ModelComposite?
   END AnnotativeModel
 
   pi(vm:AnnotativeModel,c:Conf): RECURSIVE Product =
@@ -38,9 +23,7 @@ BEGIN
 	   pi(vm1,c)
 	ELSE
 	   pi(vm2,c)
-	ENDIF,
-      ModelComposite(vm1, vm2):
-	   composite(pi(vm1,c),pi(vm2,c))
+	ENDIF
     ENDCASES
     MEASURE vm by <<
 
@@ -48,7 +31,6 @@ BEGIN
   BEGIN
      BaseExpression(p:Property): BaseExpression?
      ChoiceExpression(pc:PresenceCondition, vp1:AnnotativeExpression, vp2:AnnotativeExpression): ChoiceExpression?
-     CompositeExpression (analysisShell: AnalyzeModelCompositeShell, vp1:AnnotativeExpression, vp2:AnnotativeExpression): CompositeExpression?
   END AnnotativeExpression  
 
   sigma(vp:AnnotativeExpression,c:Conf): RECURSIVE Property =
@@ -59,17 +41,14 @@ BEGIN
 	   sigma(vp1,c)
 	ELSE
 	   sigma(vp2,c)
-	ENDIF,
-      CompositeExpression(analysisShell, vp1, vp2): 
-	   analysisShell(sigma(vp1,c), sigma(vp2,c))
+	ENDIF
     ENDCASES
     MEASURE vp by <<
 
   hatAlpha(vm:AnnotativeModel): RECURSIVE AnnotativeExpression =
     CASES vm OF
       ModelBase(m): BaseExpression(alpha(m)),
-      ModelChoice(pc, vm1, vm2): ChoiceExpression( pc, hatAlpha(vm1), hatAlpha(vm2) ),
-      ModelComposite(vm1, vm2): CompositeExpression(analyzeModelCompositeShell, hatAlpha(vm1), hatAlpha(vm2) )
+      ModelChoice(pc, vm1, vm2): ChoiceExpression( pc, hatAlpha(vm1), hatAlpha(vm2) )
     ENDCASES
     MEASURE vm by <<
 
