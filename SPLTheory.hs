@@ -66,3 +66,29 @@ commutative_product_family_product :: Conf -> AnnotativeModel -> Bool
 
 commutative_product_family_product conf  vModel = sigma (hatAlpha vModel) conf ==  alpha(pi vModel conf)
 
+-- **** top-left quadrant
+
+-- from well-founded relation. Type class??
+-- all finite, including list
+top :: (Functor t) =>  t AnnotativeModel  -> AnnotativeModel
+dependents :: (Functor t) => t AnnotativeModel ->  AnnotativeModel -> [AnnotativeModel]
+
+-- needed for the composition in each node of the relation
+partialCompostion ::  AnnotativeModel -> Product -> AnnotativeModel
+   
+pi' ::  (Functor t) => Conf -> t AnnotativeModel ->  Product
+pi' c cm = foldl partialCompostion (top cm) (map (pi' c) (dependents cm (top cm)))
+  
+analyzeCM :: (Functor t) => t AnnotativeModel -> t AnnotativeExpression
+analyzeCM cm = fmap hatAlpha cm 
+
+sigma' ::  (Functor t) => Conf -> t AnnotativeExpression -> Property  
+sigma'  c  ce =  substitute (top ce) (map (sigma' c) (dependents ce (top ce)))
+
+commutative_feature_product_product :: (Functor t) => Conf -> t AnnotativeModel -> Bool
+
+commutative_feature_product_product conf  cModel = sigma' conf (analyzeCM cModel)  ==  alpha(pi' conf cModel )
+
+
+
+
