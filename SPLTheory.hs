@@ -8,7 +8,7 @@ import Prelude hiding (pi)
 ------ Non-variable definitions
 
 -- A non-variable model is an uninterpreted type abstracting the details of any particular product type
-data Product;
+data Product = SomeProduct;
 
 data Property = SomeValue deriving Eq
 
@@ -66,50 +66,44 @@ commutative_product_family_product :: Conf -> AnnotativeModel -> Bool
 
 commutative_product_family_product conf  vModel = sigma (hatAlpha vModel) conf ==  alpha(pi vModel conf)
 
+
 -- **** top-left quadrant
 
--- from well-founded relation. Type class??
--- all finite, including list
-top :: (Functor t) =>  t AnnotativeModel  -> AnnotativeModel
-dependents :: (Functor t) => t AnnotativeModel ->  AnnotativeModel -> [(PresenceCondition, t AnnotativeModel)]
 
--- needed for the model composition in each node of the relation
--- incorporating dependent models from the recurseve composition (pi')  along the structure
-pMdlComp ::  AnnotativeModel -> Product -> AnnotativeModel
-pMdlComp (ModelChoice pc (ModelChoice pc1 am11 am12 ) vp2@(ModelChoice pc2 am21 am22 ) ) p = 
-         (ModelChoice pc (ModelBase p) vp2 )
-pMdlComp (ModelChoice pc  prdt@(ModelBase productct) (ModelChoice pc2 am21 am22 ) ) p = 
-         (ModelChoice pc  prdt (ModelBase p) )       
-pMdlComp am _ = am 
- 
-pi' ::  (Functor t) => Conf -> t AnnotativeModel ->  Product
-pi' c cm = foldl pMdlComp 
-                (top cm) 
-                (map (\(pc,scm) -> if (c pc) then  pi' c scm else ModelBase Product) (dependents cm (top cm)))
+-- ***all finite, including list
+
+-- behavior needed for the  composition of both models and expressions in each node of the relation
+-- incorporating dependent elements from the recursive composition along the structure
+class Composeable v where
+   partialComposition :: v -> b -> v    
+
+--dummy implementation. In PVS, partialComposition would remain uninterpreted
+instance Composeable AnnotativeModel where
+  partialComposition am p = am
+--dummy implementation. In PVS, partialComposition would remain uninterpreted  
+instance Composeable AnnotativeExpression where
+  partialComposition ae e = ae
+
+class (Functor t) => WellFoundedFunctor t where 
+   top :: Composeable u => t u -> u
+   dependents :: Composeable u  => t u ->  u -> [(PresenceCondition, t u)]
   
-analyzeCM :: (Functor t) => t AnnotativeModel -> t AnnotativeExpression
-analyzeCM cm = fmap hatAlpha cm 
+class (WellFoundedFunctor t) =>  CompositionalModel t where 
 
--- needed for the partial expression composition in each node of the relation
--- incorporating dependent values from the recursieve evaluation (sigma') along the structure
-pExpComp ::  AnnotativeExpression -> Property -> AnnotativeExpression
-pExpComp (ChoiceExpression pc (ChoiceExpression pc1 vp11 vp12) vp2@(ChoiceExpression pc2 vp21 vp22) ) p   =  
-         (ChoiceExpression pc (BaseExpression p) vp2)
-pExpComp (ChoiceExpression pc vp1@(BaseExpression pr) (ChoiceExpression pc2 vp21 vp22) ) p   =  
-         (ChoiceExpression pc vp1 (BaseExpression p))        
-pExpComp  ae  _  =  ae 
+   pi' :: Conf -> t AnnotativeModel ->  Product
+   pi' c cm = pi (foldl partialComposition 
+                    (top cm) 
+                    (map (\(pc,scm) -> if (c pc) then  pi' c scm else SomeProduct) (dependents cm (top cm))))
+               c
+  
+   analyzeCM ::  t AnnotativeModel -> t AnnotativeExpression
+   analyzeCM cm = fmap hatAlpha cm 
 
-sigma' :: (Functor t) => Conf -> t AnnotativeExpression -> Property  
-sigma' c  ce = sigma (foldl pExpComp 
-                            (top ce) 
-                            (map (\(pc, sce)-> if (c pc) then sigma' c sce else SomeValue) 
-                                 (dependents ce (top ce)))) 
+   sigma' :: Conf -> t AnnotativeExpression -> Property  
+   sigma' c  ce = sigma (foldl partialComposition 
+                           (top ce) 
+                           (map (\(pc, sce)-> if (c pc) then sigma' c sce else SomeValue) (dependents ce (top ce)))) 
                      c
 
-commutative_feature_product_product :: (Functor t) => Conf -> t AnnotativeModel -> Bool
-
-commutative_feature_product_product conf  cModel = sigma' conf (analyzeCM cModel)  ==  alpha(pi' conf cModel )
-
-
-
-
+   commutative_feature_product_product ::  Conf -> t AnnotativeModel -> Bool
+   commutative_feature_product_product conf  cModel = sigma' conf (analyzeCM cModel)  ==  alpha(pi' conf cModel )
