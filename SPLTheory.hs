@@ -20,7 +20,7 @@ alpha _  = SomeValue
 ------ variable definitions
 
 -- a presence condition is a feature expression, yet to detail
-data PresenceCondition;
+data PresenceCondition = SomeCondition deriving Eq
 
 -- A configuration values a presence condition 
 type Conf = PresenceCondition -> Bool  
@@ -43,6 +43,7 @@ pi (ModelChoice pc vm1 vm2) c = if c pc
 -- Representation of variability bookeeping of analysis. This supports lazy computation of the analysis             
 data AnnotativeExpression = BaseExpression Property | 
                             ChoiceExpression PresenceCondition AnnotativeExpression AnnotativeExpression 
+					deriving Eq
                             
 
 -- Binds the variability in the variability bookeeping of analysis
@@ -72,37 +73,52 @@ commutative_product_family_product conf  vModel = sigma (hatAlpha vModel) conf =
 
 -- ***all finite, including list
 
--- behavior needed for the  composition of both models and expressions in each node of the relation
+-- behavior needed for the  composition of  models  in each node of the relation
 -- incorporating dependent elements from the recursive composition along the structure
-class Composeable v where
-   partialComposition :: v -> b -> v    
+partialModelComposition :: AnnotativeModel -> AnnotativeModel -> AnnotativeModel
+--dummy implementation. In PVS, the function would remain uninterpreted
+partialModelComposition am p = am
 
---dummy implementation. In PVS, partialComposition would remain uninterpreted
-instance Composeable AnnotativeModel where
-  partialComposition am p = am
+-- behavior needed for the  composition of  expressions in each node of the relation
+-- incorporating dependent elements from the recursive composition along the structure  
+partialExpComposition :: AnnotativeExpression -> AnnotativeExpression -> AnnotativeExpression
 --dummy implementation. In PVS, partialComposition would remain uninterpreted  
-instance Composeable AnnotativeExpression where
-  partialComposition ae e = ae
+-- in a concrete implementation, these would be different for models and expressions.
+partialExpComposition ae e = ae
+
+{- ASSUMPTION to be encoded in PVS: 
+ 
+   hatAlpha (partialModelComposition m1 m2 ) = partialExpComposition (hatAlpha m1) (hatAlpha m2)
+   
+   The assumption establishes an hatAlpha as an isophorfism between AnnotativeModel and AnnotativeExpression
+   in which the respective morphisms involve the partial composition operations. In short, the assumption is
+   that partial composition of models and expressions must preserve the correspondence between models and 
+   expressions established by the analysis function. This will probably by needed in the proof of the commuitative property for this quadrant.
+   Hint: the definitions of pi' and sigma' below are quite similar
+-}
+
+assumption :: AnnotativeModel -> AnnotativeModel -> Bool
+assumption m1 m2 = hatAlpha (partialModelComposition m1 m2 ) == partialExpComposition (hatAlpha m1) (hatAlpha m2)
+
 
 class (Functor t) => WellFoundedFunctor t where 
-   top :: Composeable u => t u -> u
-   dependents :: Composeable u  => t u ->  u -> [(PresenceCondition, t u)]
+   top :: t u -> u
+   dependents :: t u ->  u -> [(PresenceCondition, t u)]
   
 class (WellFoundedFunctor t) =>  CompositionalModel t where 
-
    pi' :: Conf -> t AnnotativeModel ->  Product
-   pi' c cm = pi (foldl partialComposition 
+   pi' c cm = pi (foldl partialModelComposition 
                     (top cm) 
-                    (map (\(pc,scm) -> if (c pc) then  pi' c scm else SomeProduct) (dependents cm (top cm))))
+                    (map (\(pc,scm) -> if (c pc) then ModelBase (pi' c scm) else ModelBase SomeProduct) (dependents cm (top cm))))
                c
   
    analyzeCM ::  t AnnotativeModel -> t AnnotativeExpression
    analyzeCM cm = fmap hatAlpha cm 
 
    sigma' :: Conf -> t AnnotativeExpression -> Property  
-   sigma' c  ce = sigma (foldl partialComposition 
+   sigma' c  ce = sigma (foldl partialExpComposition 
                            (top ce) 
-                           (map (\(pc, sce)-> if (c pc) then sigma' c sce else SomeValue) (dependents ce (top ce)))) 
+                           (map (\(pc, sce)-> if (c pc) then BaseExpression (sigma' c sce) else BaseExpression SomeValue) (dependents ce (top ce)))) 
                      c
 
    commutative_feature_product_product ::  Conf -> t AnnotativeModel -> Bool
