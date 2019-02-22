@@ -123,3 +123,25 @@ class (WellFoundedFunctor t) =>  CompositionalModel t where
 
    commutative_feature_product_product ::  Conf -> t AnnotativeModel -> Bool
    commutative_feature_product_product conf  cModel = sigma' conf (analyzeCM cModel)  ==  alpha(pi' conf cModel )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

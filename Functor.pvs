@@ -1,0 +1,10 @@
+Functor[S : TYPE, T: TYPE] : THEORY
+BEGIN
+
+  F : TYPE = [S -> T]
+  fmap : [F, S, S -> T]
+  
+
+
+
+END Functor

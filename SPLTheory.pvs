@@ -56,5 +56,14 @@ BEGIN
   vModel : VAR AnnotativeModel
   commutative_product_family_product: THEOREM sigma(hatAlpha(vModel),conf) = alpha(pi(vModel,conf))
 
+  partialModelComposition: [AnnotativeModel, AnnotativeModel -> AnnotativeModel]
+  partialExpComposition: [AnnotativeExpression, AnnotativeExpression -> AnnotativeExpression]
+
+  m1, m2 : VAR AnnotativeModel
+
+  isomorphismModelExp: AXIOM hatAlpha(partialModelComposition(m1,m2)) = partialExpComposition(hatAlpha(m1),hatAlpha(m2))
+
+
+
 
 END SPLTheory
