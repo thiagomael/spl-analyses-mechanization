@@ -63,7 +63,22 @@ BEGIN
 
   isomorphismModelExp: AXIOM hatAlpha(partialModelComposition(m1,m2)) = partialExpComposition(hatAlpha(m1),hatAlpha(m2))
 
+  CompositionalModel : TYPE+
+  CompositionalExpression : TYPE+
+  top : [CompositionalModel -> AnnotativeModel]
 
+  Pair : TYPE =  [# pc : PresenceCondition, cm : CompositionalModel #]
+  Deps : TYPE = list[Pair]
 
+  dependents : [CompositionalModel, AnnotativeModel -> Deps]
+
+  pi_ : [Conf, CompositionalModel -> Product]
+
+  analyzeCM : [CompositionalModel -> CompositionalExpression]
+
+  sigma_ : [Conf, CompositionalExpression -> Property]
+
+  cModel : VAR CompositionalModel
+  commutative_feature_product_product: THEOREM sigma_(conf, analyzeCM(cModel)) = alpha(pi_(conf, cModel))
 
 END SPLTheory
