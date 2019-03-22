@@ -56,6 +56,8 @@ BEGIN
   vModel : VAR AnnotativeModel
   commutative_product_family_product: THEOREM sigma(hatAlpha(vModel),conf) = alpha(pi(vModel,conf))
 
+  %% COMPOSITIONAL
+
   partialModelComposition: [AnnotativeModel, AnnotativeModel -> AnnotativeModel]
   partialExpComposition: [AnnotativeExpression, AnnotativeExpression -> AnnotativeExpression]
 
@@ -63,22 +65,92 @@ BEGIN
 
   isomorphismModelExp: AXIOM hatAlpha(partialModelComposition(m1,m2)) = partialExpComposition(hatAlpha(m1),hatAlpha(m2))
 
-  CompositionalModel : TYPE+
-  CompositionalExpression : TYPE+
+  %%Model : TYPE+
+  relation : [AnnotativeModel,AnnotativeModel->bool]
+  wfRelation: AXIOM orders[set[AnnotativeModel]].well_founded?( relation ) 
+
+  CompositionalModel : TYPE = [# models : set[AnnotativeModel], rel : (relation) #]
+  cModel,cm : VAR CompositionalModel
   top : [CompositionalModel -> AnnotativeModel]
-
   Pair : TYPE =  [# pc : PresenceCondition, cm : CompositionalModel #]
-  Deps : TYPE = list[Pair]
+  dependents : [CompositionalModel, AnnotativeModel -> list[Pair]]
+  foldl(f:[AnnotativeModel, AnnotativeModel -> AnnotativeModel], am:AnnotativeModel, l:list[AnnotativeModel]) : RECURSIVE AnnotativeModel =
+    CASES l OF
+      null: am,
+      cons(x, xs): foldl(f, f(am,x), xs)
+    ENDCASES
+    MEASURE length(l)
 
-  dependents : [CompositionalModel, AnnotativeModel -> Deps]
+  pi_(cm:CompositionalModel, c:Conf) : RECURSIVE Product =
+    pi(
+	foldl(
+	      partialModelComposition,
+	      top(cm),
+	      map(LAMBDA(p:Pair):IF ( c(pc(p)) ) THEN ModelBase(pi_(cm(p),c)) ELSE top(cm(p)) ENDIF, dependents(cm, top(cm)))
+	),
+        c
+    )
+    MEASURE length(dependents(cm, top(cm)))
 
-  pi_ : [Conf, CompositionalModel -> Product]
+  relationExp : [AnnotativeExpression,AnnotativeExpression->bool]
+  wfRelationExp: AXIOM orders[set[AnnotativeExpression]].well_founded?( relationExp ) 
+  CompositionalExpression : TYPE = [# exps : set[AnnotativeExpression], rel : (relationExp) #]
+  topExp : [CompositionalExpression -> AnnotativeExpression]
+  PairExp : TYPE =  [# pc : PresenceCondition, ce : CompositionalExpression #]
+  dependentsExp : [CompositionalExpression, AnnotativeExpression -> list[PairExp]]
+  foldlExp(f:[AnnotativeExpression, AnnotativeExpression -> AnnotativeExpression], ae:AnnotativeExpression, l:list[AnnotativeExpression]) : RECURSIVE AnnotativeExpression =
+    CASES l OF
+      null: ae,
+      cons(x, xs): foldlExp(f, f(ae,x), xs)
+    ENDCASES
+    MEASURE length(l)
+
+  sigma_(ce:CompositionalExpression, c:Conf) : RECURSIVE Property =
+    sigma(
+	foldlExp(
+	      partialExpComposition,
+	      topExp(ce),
+	      map(LAMBDA(p:PairExp):IF ( c(pc(p)) ) THEN BaseExpression(sigma_(ce(p),c)) ELSE topExp(ce(p)) ENDIF, dependentsExp(ce, topExp(ce)))
+	),
+        c
+    )
+    MEASURE length(dependentsExp(ce, topExp(ce)))
 
   analyzeCM : [CompositionalModel -> CompositionalExpression]
 
-  sigma_ : [Conf, CompositionalExpression -> Property]
+  commutative_feature_product_product: THEOREM sigma_(analyzeCM(cModel), conf) = alpha(pi_(cModel, conf))
 
-  cModel : VAR CompositionalModel
-  commutative_feature_product_product: THEOREM sigma_(conf, analyzeCM(cModel)) = alpha(pi_(conf, cModel))
+  %% FAMILY - ANNOTATIVE
+
+  PropertyADD : TYPE+
+  toADD : [Property -> PropertyADD]
+
+  LiftedAnnotativeExpression : DATATYPE
+  BEGIN
+     LiftedBaseExpression(p:PropertyADD): LiftedBaseExpression?
+     LiftedChoiceExpression(pc:PresenceCondition, ae1:LiftedAnnotativeExpression, ae2:LiftedAnnotativeExpression): LiftedChoiceExpression?
+  END LiftedAnnotativeExpression
+
+  lift(ae:AnnotativeExpression): RECURSIVE LiftedAnnotativeExpression =
+    CASES ae OF
+      BaseExpression(p): LiftedBaseExpression(toADD(p)),
+      ChoiceExpression(pc, ae1, ae2): LiftedChoiceExpression(pc, lift(ae1), lift(ae2))
+    ENDCASES
+    MEASURE ae by <<
+
+  sigmaLift(vp:LiftedAnnotativeExpression,c:Conf): RECURSIVE PropertyADD =
+    CASES vp OF
+      LiftedBaseExpression(p): p,
+      LiftedChoiceExpression(pc, vp1, vp2):
+        IF c(pc) THEN
+	   sigmaLift(vp1,c)
+	ELSE
+	   sigmaLift(vp2,c)
+	ENDIF
+    ENDCASES
+    MEASURE vp by <<
+
+    %commutative_family_product: THEOREM sigmaLift( lift(hatAlpha(vModel)), conf) = alpha(pi(vModel,conf))
+
 
 END SPLTheory

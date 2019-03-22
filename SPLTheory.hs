@@ -109,7 +109,10 @@ class (WellFoundedFunctor t) =>  CompositionalModel t where
    pi' :: Conf -> t AnnotativeModel ->  Product
    pi' c cm = pi (foldl partialModelComposition 
                     (top cm) 
-                    (map (\(pc,scm) -> if (c pc) then ModelBase (pi' c scm) else ModelBase SomeProduct) (dependents cm (top cm))))
+                    (
+                      map (\(pc,scm) -> if (c pc) then ModelBase (pi' c scm) else ModelBase SomeProduct) (dependents cm (top cm))
+                    )
+                 )
                c
   
    analyzeCM ::  t AnnotativeModel -> t AnnotativeExpression
@@ -123,25 +126,3 @@ class (WellFoundedFunctor t) =>  CompositionalModel t where
 
    commutative_feature_product_product ::  Conf -> t AnnotativeModel -> Bool
    commutative_feature_product_product conf  cModel = sigma' conf (analyzeCM cModel)  ==  alpha(pi' conf cModel )
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
