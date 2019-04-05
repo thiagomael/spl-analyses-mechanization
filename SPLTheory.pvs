@@ -2,7 +2,12 @@ SPLTheory : THEORY
 BEGIN
 
   Product : TYPE+
+  emptyproduct : Product
+  nonemptyproduct?(p:Product) : bool = p /= emptyproduct
+
   Property: TYPE+
+  emptyproperty : Property
+  nonemptyproperty?(p:Property) : bool = p /= emptyproperty
 
   alpha: [Product -> Property]
 
@@ -67,7 +72,7 @@ BEGIN
 
   %%Model : TYPE+
   relation : [AnnotativeModel,AnnotativeModel->bool]
-  wfRelation: AXIOM orders[set[AnnotativeModel]].well_founded?( relation ) 
+  wfRelation: AXIOM orders[AnnotativeModel].well_founded?( relation ) 
 
   CompositionalModel : TYPE = [# models : set[AnnotativeModel], rel : (relation) #]
   cModel,cm : VAR CompositionalModel
@@ -86,14 +91,14 @@ BEGIN
 	foldl(
 	      partialModelComposition,
 	      top(cm),
-	      map(LAMBDA(p:Pair):IF ( c(pc(p)) ) THEN ModelBase(pi_(cm(p),c)) ELSE top(cm(p)) ENDIF, dependents(cm, top(cm)))
+	      map(LAMBDA(p:Pair):IF ( c(pc(p)) ) THEN ModelBase(pi_(cm(p),c)) ELSE ModelBase(emptyproduct) ENDIF, dependents(cm, top(cm)))
 	),
         c
     )
     MEASURE length(dependents(cm, top(cm)))
 
   relationExp : [AnnotativeExpression,AnnotativeExpression->bool]
-  wfRelationExp: AXIOM orders[set[AnnotativeExpression]].well_founded?( relationExp ) 
+  wfRelationExp: AXIOM orders[AnnotativeExpression].well_founded?( relationExp ) 
   CompositionalExpression : TYPE = [# exps : set[AnnotativeExpression], rel : (relationExp) #]
   topExp : [CompositionalExpression -> AnnotativeExpression]
   PairExp : TYPE =  [# pc : PresenceCondition, ce : CompositionalExpression #]
@@ -110,7 +115,7 @@ BEGIN
 	foldlExp(
 	      partialExpComposition,
 	      topExp(ce),
-	      map(LAMBDA(p:PairExp):IF ( c(pc(p)) ) THEN BaseExpression(sigma_(ce(p),c)) ELSE topExp(ce(p)) ENDIF, dependentsExp(ce, topExp(ce)))
+	      map(LAMBDA(p:PairExp):IF ( c(pc(p)) ) THEN BaseExpression(sigma_(ce(p),c)) ELSE BaseExpression(emptyproperty) ENDIF, dependentsExp(ce, topExp(ce)))
 	),
         c
     )
