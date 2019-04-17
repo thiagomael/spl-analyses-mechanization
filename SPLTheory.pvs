@@ -70,15 +70,14 @@ BEGIN
 
   isomorphismModelExp: AXIOM hatAlpha(partialModelComposition(m1,m2)) = partialExpComposition(hatAlpha(m1),hatAlpha(m2))
 
-  %%Model : TYPE+
-  relation : [AnnotativeModel,AnnotativeModel->bool]
-  wfRelation: AXIOM orders[AnnotativeModel].well_founded?( relation ) 
-
-  CompositionalModel : TYPE = [# models : set[AnnotativeModel], rel : (relation) #]
+  IMPORTING CompositionalThings[nat]
+  CompositionalModel : TYPE  = CompositionalThing[AnnotativeModel]
   cModel,cm : VAR CompositionalModel
-  top : [CompositionalModel -> AnnotativeModel]
+
+  top(cm) : {m: AnnotativeModel | EXISTS (n:nat) : ( E(cm)(n) = m AND NOT(EXISTS(j:nat): ord(cm)(j, n) ) ) }
   Pair : TYPE =  [# pc : PresenceCondition, cm : CompositionalModel #]
   dependents : [CompositionalModel, AnnotativeModel -> list[Pair]]
+  
   foldl(f:[AnnotativeModel, AnnotativeModel -> AnnotativeModel], am:AnnotativeModel, l:list[AnnotativeModel]) : RECURSIVE AnnotativeModel =
     CASES l OF
       null: am,
@@ -96,11 +95,12 @@ BEGIN
         c
     )
     MEASURE length(dependents(cm, top(cm)))
+    %MEASURE cm BY ord(cm)
 
-  relationExp : [AnnotativeExpression,AnnotativeExpression->bool]
-  wfRelationExp: AXIOM orders[AnnotativeExpression].well_founded?( relationExp ) 
-  CompositionalExpression : TYPE = [# exps : set[AnnotativeExpression], rel : (relationExp) #]
-  topExp : [CompositionalExpression -> AnnotativeExpression]
+  CompositionalExpression : TYPE  = CompositionalThing[AnnotativeExpression]
+  cExp,ce : VAR CompositionalExpression
+
+  topExp(ce) : {m: AnnotativeExpression | EXISTS (n:nat) : ( E(ce)(n) = m AND NOT(EXISTS(j:nat): ord(ce)(j, n) ) ) }
   PairExp : TYPE =  [# pc : PresenceCondition, ce : CompositionalExpression #]
   dependentsExp : [CompositionalExpression, AnnotativeExpression -> list[PairExp]]
   foldlExp(f:[AnnotativeExpression, AnnotativeExpression -> AnnotativeExpression], ae:AnnotativeExpression, l:list[AnnotativeExpression]) : RECURSIVE AnnotativeExpression =
@@ -121,8 +121,9 @@ BEGIN
     )
     MEASURE length(dependentsExp(ce, topExp(ce)))
 
-  analyzeCM : [CompositionalModel -> CompositionalExpression]
+  IMPORTING CompositionalFunctor[nat,AnnotativeModel,AnnotativeExpression]
 
+  analyzeCM(cm) : CompositionalExpression = fmap(hatAlpha,cm)
   commutative_feature_product_product: THEOREM sigma_(analyzeCM(cModel), conf) = alpha(pi_(cModel, conf))
 
   %% FAMILY - ANNOTATIVE

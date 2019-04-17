@@ -1,0 +1,18 @@
+CompositionalThings [R:TYPE] : THEORY
+BEGIN
+  %R pode ser um nat
+  
+  CompositionalThing[T:TYPE] : TYPE =
+      [# idt : set[R], E : [R->T], ord : (orders[R].well_founded?) #]
+      
+END CompositionalThings
+
+
+CompositionalFunctor[R:TYPE, T:TYPE,U:TYPE] : THEORY
+BEGIN
+  IMPORTING CompositionalThings[R]
+
+  fmap(f:[T->U], c: CompositionalThing[T]) : CompositionalThing[U] =
+    (# idt := idt(c), E := LAMBDA(x:R):f(E(c)(x)), ord := ord(c) #)
+
+END CompositionalFunctor
