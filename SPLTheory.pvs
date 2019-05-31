@@ -12,6 +12,7 @@ BEGIN
   alpha: [Product -> Property]
 
   PresenceCondition: TYPE+
+  truepc : PresenceCondition
   Conf: TYPE = set[PresenceCondition]
 
   AnnotativeModel : DATATYPE
@@ -58,7 +59,7 @@ BEGIN
     MEASURE vm by <<
 
   conf: VAR Conf
-  vModel : VAR AnnotativeModel
+  vModel, am : VAR AnnotativeModel
   commutative_product_family_product: THEOREM sigma(hatAlpha(vModel),conf) = alpha(pi(vModel,conf))
 
   %% COMPOSITIONAL
@@ -67,6 +68,7 @@ BEGIN
   partialExpComposition: [AnnotativeExpression, AnnotativeExpression -> AnnotativeExpression]
 
   m1, m2 : VAR AnnotativeModel
+  n : VAR nat
 
   isomorphismModelExp: AXIOM hatAlpha(partialModelComposition(m1,m2)) = partialExpComposition(hatAlpha(m1),hatAlpha(m2))
 
@@ -74,10 +76,47 @@ BEGIN
   CompositionalModel : TYPE  = CompositionalThing[AnnotativeModel]
   cModel,cm : VAR CompositionalModel
 
-  top(cm) : {m: AnnotativeModel | EXISTS (n:nat) : ( E(cm)(n) = m AND NOT(EXISTS(j:nat): ord(cm)(j, n) ) ) }
-  Pair : TYPE =  [# pc : PresenceCondition, cm : CompositionalModel #]
-  dependents : [CompositionalModel, AnnotativeModel -> list[Pair]]
+  Pair : TYPE =  [# pc : PresenceCondition, idt : nat #]
+  dependents : [CompositionalModel, nat -> list[Pair]]
+
+%% dependents - receber ID, retornar lista de pares (PresenceCondition, Id)
+
+%%%%%%%
+%  CompositionalThing[AnnotativeModel] : TYPE =
+%      [# idt : finite_sets[nat].finite_set,
+%         E : [nat->AnnotativeModel],
+%	 ord : (orders[nat].well_founded?),
+%	 top : (idt) #]
+
+%CM A(top) B C-->D
+%[ (presenceConditionB , CM B), (presenceConditionC , CM C) ]
+
+%CM A --> CM B C (idt - A) 
+
+%%%%%%%
+
+  dependentIds(cm:CompositionalModel, id : { n:nat | member(n,cm`idt) } ) : finite_sets[nat].finite_set =
+    {n:nat | cm`ord(id,n)}
   
+  getPC(am) : PresenceCondition =
+    CASES am OF
+      ModelBase(m): truepc,
+      ModelChoice(pc, vm1, vm2): pc
+    ENDCASES
+
+  getPCi(cm:CompositionalModel, id : { n:nat | member(n,cm`idt) }) : PresenceCondition =
+    getPC(cm`E(id))
+
+  dependentes(cm:CompositionalModel, id : { n:nat | member(n,cm`idt) } ) : finite_sets[Pair].finite_set =
+    {p: Pair | EXISTS (pc:PresenceCondition, n:nat) : cm`ord(id,n) AND p`pc = getPCi(cm,n)}
+
+  foldls(f:[AnnotativeModel, AnnotativeModel -> AnnotativeModel], am:AnnotativeModel, s:finite_sets[AnnotativeModel].finite_set) : RECURSIVE AnnotativeModel =
+    IF empty?(s) THEN am ELSE foldls(f, f(am, x), remove(x,s)) ENDIF  WHERE x = choose(s)
+    MEASURE card(s)
+
+
+
+
   foldl(f:[AnnotativeModel, AnnotativeModel -> AnnotativeModel], am:AnnotativeModel, l:list[AnnotativeModel]) : RECURSIVE AnnotativeModel =
     CASES l OF
       null: am,
@@ -85,17 +124,21 @@ BEGIN
     ENDCASES
     MEASURE length(l)
 
-  pi_(cm:CompositionalModel, c:Conf) : RECURSIVE Product =
+  pi_r(cm:CompositionalModel, idt:nat, c:Conf) : RECURSIVE Product =
     pi(
 	foldl(
 	      partialModelComposition,
-	      top(cm),
-	      map(LAMBDA(p:Pair):IF ( c(pc(p)) ) THEN ModelBase(pi_(cm(p),c)) ELSE ModelBase(emptyproduct) ENDIF, dependents(cm, top(cm)))
+	      cm`E(cm`top),
+	      map(LAMBDA(p:Pair):IF ( c(p`pc) ) THEN ModelBase(pi_r(cm, p`idt, c)) ELSE ModelBase(emptyproduct) ENDIF,
+	          dependents(cm, idt)
+	      )
 	),
         c
     )
-    MEASURE length(dependents(cm, top(cm)))
-    %MEASURE cm BY ord(cm)
+    MEASURE top(cm) BY ord(cm)
+
+  pi_(cm:CompositionalModel, c:Conf) : Product =
+    pi_r(cm, cm`top, c)
 
   CompositionalExpression : TYPE  = CompositionalThing[AnnotativeExpression]
   cExp,ce : VAR CompositionalExpression
@@ -122,8 +165,8 @@ BEGIN
     MEASURE length(dependentsExp(ce, topExp(ce)))
 
   IMPORTING CompositionalFunctor[nat,AnnotativeModel,AnnotativeExpression]
-
   analyzeCM(cm) : CompositionalExpression = fmap(hatAlpha,cm)
+  
   commutative_feature_product_product: THEOREM sigma_(analyzeCM(cModel), conf) = alpha(pi_(cModel, conf))
 
   %% FAMILY - ANNOTATIVE

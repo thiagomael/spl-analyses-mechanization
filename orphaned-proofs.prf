@@ -2,4 +2,4 @@
                             IF (c(pc(p))) THEN ModelBase(pi_(cm(p), c))
                             ELSE ModelBase(emptyproduct)
                             ENDIF,
-                          dependents(cm, top(cm)))=null") (("1" (assert) (("1" (postpone) nil nil)) nil) ("2" (lift-if) (("2" (bddsimp) (("2" (expand pi) (("2" (lift-if) (("2" (bddsimp) (("1" (postpone) nil nil) ("2" (postpone) nil nil) ("3" (postpone) nil nil)) nil)) nil)) nil)) nil)) nil)) nil)) nil)) nil)) nil) nil shostak))("SPLTheory" SPLTheory analyzeCM_TCC1 0 (analyzeCM_TCC1-1 nil 3762261712 ("" (existence-tcc) nil nil) nil nil))
+                          dependents(cm, top(cm)))=null") (("1" (assert) (("1" (postpone) nil nil)) nil) ("2" (lift-if) (("2" (bddsimp) (("2" (expand pi) (("2" (lift-if) (("2" (bddsimp) (("1" (postpone) nil nil) ("2" (postpone) nil nil) ("3" (postpone) nil nil)) nil)) nil)) nil)) nil)) nil)) nil)) nil)) nil)) nil) nil shostak))("SPLTheory" SPLTheory analyzeCM_TCC1 0 (analyzeCM_TCC1-1 nil 3762261712 ("" (existence-tcc) nil nil) nil nil))("SPLTheory" SPLTheory pi__TCC1 0 (pi__TCC1-1 nil 3762261712 ("" (termination-tcc) nil nil) nil nil))

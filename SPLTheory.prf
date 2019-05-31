@@ -75,24 +75,50 @@
     (pi def-decl "Product" SPLTheory nil)
     (AnnotativeModel_induction formula-decl nil SPLTheory nil))
    shostak))
+ (dependentIds_TCC1 0
+  (dependentIds_TCC1-1 nil 3768310294 ("" (subtype-tcc) nil nil) nil
+   nil))
+ (dependentes_TCC1 0
+  (dependentes_TCC1-1 nil 3768310294 ("" (subtype-tcc) nil nil) nil
+   nil))
+ (dependentes_TCC2 0
+  (dependentes_TCC2-1 nil 3768310294 ("" (subtype-tcc) nil nil) nil
+   nil))
+ (foldls_TCC1 0
+  (foldls_TCC1-1 nil 3768310294
+   ("" (skolem 1 (s x))
+    (("" (flatten)
+      (("" (lemma finite_sets[AnnotativeModel].card_remove)
+        (("" (instantiate -1 (s x)) (("" (assert) nil nil)) nil)) nil))
+      nil))
+    nil)
+   ((finite_set type-eq-decl nil finite_sets nil)
+    (is_finite const-decl "bool" finite_sets nil)
+    (set type-eq-decl nil sets nil)
+    (bool nonempty-type-eq-decl nil booleans nil)
+    (boolean nonempty-type-decl nil booleans nil)
+    (real_lt_is_strict_total_order name-judgement
+     "(strict_total_order?[real])" real_props nil)
+    (finite_remove application-judgement "finite_set" finite_sets nil)
+    (int_minus_int_is_int application-judgement "int" integers nil)
+    (card_remove formula-decl nil finite_sets nil)
+    (AnnotativeModel type-decl nil SPLTheory nil))
+   nil))
+ (foldls_TCC2 0
+  (foldls_TCC2-1 nil 3768310294 ("" (subtype-tcc) nil nil) nil nil))
  (foldl_TCC1 0
   (foldl_TCC1-1 nil 3762261712 ("" (termination-tcc) nil nil) nil nil))
- (pi__TCC1 0
-  (pi__TCC1-1 nil 3762261712 ("" (termination-tcc) nil nil) nil nil))
- (wfRelationExp_TCC1 0
-  (wfRelationExp_TCC1-1 nil 3762261712 ("" (subtype-tcc) nil nil) nil
-   nil))
- (wfRelationExp_TCC2 0
-  (wfRelationExp_TCC2-1 nil 3762261712 ("" (subtype-tcc) nil nil) nil
-   nil))
+ (pi_r_TCC1 0
+  (pi_r_TCC1-1 nil 3768310294 ("" (well-founded-tcc) nil nil) nil nil))
+ (pi_r_TCC2 0
+  (pi_r_TCC2-1 nil 3768310294 ("" (termination-tcc) nil nil) nil nil))
+ (topExp_TCC1 0
+  (topExp_TCC1-1 nil 3768310294 ("" (existence-tcc) nil nil) nil nil))
  (foldlExp_TCC1 0
   (foldlExp_TCC1-1 nil 3762261712 ("" (termination-tcc) nil nil) nil
    nil))
  (sigma__TCC1 0
   (sigma__TCC1-1 nil 3762261712 ("" (termination-tcc) nil nil) nil
-   nil))
- (analyzeCM_TCC1 0
-  (analyzeCM_TCC1-1 nil 3762261712 ("" (existence-tcc) nil nil) nil
    nil))
  (commutative_feature_product_product 0
   (commutative_feature_product_product-2 "measure_induction" 3763472700
