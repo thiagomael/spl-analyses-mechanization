@@ -75,9 +75,7 @@ BEGIN
   IMPORTING CompositionalThings[nat]
   CompositionalModel : TYPE  = CompositionalThing[AnnotativeModel]
   cModel,cm : VAR CompositionalModel
-
   Pair : TYPE =  [# pc : PresenceCondition, idt : nat #]
-  dependents : [CompositionalModel, nat -> list[Pair]]
 
 %% dependents - receber ID, retornar lista de pares (PresenceCondition, Id)
 
@@ -95,8 +93,8 @@ BEGIN
 
 %%%%%%%
 
-  dependentIds(cm:CompositionalModel, id : { n:nat | member(n,cm`idt) } ) : finite_sets[nat].finite_set =
-    {n:nat | cm`ord(id,n)}
+%  dependentIds(cm:CompositionalModel, id : { n:nat | member(n,cm`idt) } ) : finite_sets[nat].finite_set =
+%    {n:nat | cm`ord(id,n)}
   
   getPC(am) : PresenceCondition =
     CASES am OF
@@ -108,14 +106,21 @@ BEGIN
     getPC(cm`E(id))
 
   dependentes(cm:CompositionalModel, id : { n:nat | member(n,cm`idt) } ) : finite_sets[Pair].finite_set =
-    {p: Pair | EXISTS (pc:PresenceCondition, n:nat) : cm`ord(id,n) AND p`pc = getPCi(cm,n)}
+    {p: Pair | EXISTS (pc:PresenceCondition, n:nat) : cm`ord(id,n) AND p`idt=n AND p`pc = getPCi(cm,n)}
 
-  foldls(f:[AnnotativeModel, AnnotativeModel -> AnnotativeModel], am:AnnotativeModel, s:finite_sets[AnnotativeModel].finite_set) : RECURSIVE AnnotativeModel =
-    IF empty?(s) THEN am ELSE foldls(f, f(am, x), remove(x,s)) ENDIF  WHERE x = choose(s)
-    MEASURE card(s)
+  set2list(s: finite_sets[Pair].finite_set) : RECURSIVE {l:list[Pair] | length(l) = card(s) AND 
+				           FORALL(x:Pair): s(x) IFF member(x,l)} =
+    IF empty?(s) THEN null
+    ELSE cons( choose(s) , set2list(rest(s)) ) ENDIF
+  MEASURE card(s)
 
+  dependents(cm:CompositionalModel, id : { n:nat | member(n,cm`idt) } ) : list[Pair] =
+    set2list(dependentes(cm,id))
 
-
+%  foldls(f:[AnnotativeModel, AnnotativeModel -> AnnotativeModel], am:AnnotativeModel, s:finite_sets[AnnotativeModel].finite_set) :
+%    RECURSIVE AnnotativeModel =
+%    IF empty?(s) THEN am ELSE foldls(f, f(am, x), remove(x,s)) ENDIF  WHERE x = choose(s)
+%    MEASURE card(s)
 
   foldl(f:[AnnotativeModel, AnnotativeModel -> AnnotativeModel], am:AnnotativeModel, l:list[AnnotativeModel]) : RECURSIVE AnnotativeModel =
     CASES l OF
@@ -143,9 +148,21 @@ BEGIN
   CompositionalExpression : TYPE  = CompositionalThing[AnnotativeExpression]
   cExp,ce : VAR CompositionalExpression
 
-  topExp(ce) : {m: AnnotativeExpression | EXISTS (n:nat) : ( E(ce)(n) = m AND NOT(EXISTS(j:nat): ord(ce)(j, n) ) ) }
-  PairExp : TYPE =  [# pc : PresenceCondition, ce : CompositionalExpression #]
-  dependentsExp : [CompositionalExpression, AnnotativeExpression -> list[PairExp]]
+  getPC(ae:AnnotativeExpression) : PresenceCondition =
+    CASES ae OF
+      BaseExpression(p): truepc,
+      ChoiceExpression(pc, vm1, vm2): pc
+    ENDCASES
+
+  getPCi(ce:CompositionalExpression, id : { n:nat | member(n,ce`idt) }) : PresenceCondition =
+    getPC(ce`E(id))
+
+  dependentesExp(ce:CompositionalExpression, id : { n:nat | member(n,ce`idt) } ) : finite_sets[Pair].finite_set =
+    {p: Pair | EXISTS (pc:PresenceCondition, n:nat) : ce`ord(id,n) AND p`idt=n AND p`pc = getPCi(ce,n)}
+
+  dependentsExp(ce:CompositionalExpression, id : { n:nat | member(n,ce`idt) } ) : list[Pair] =
+    set2list(dependentesExp(ce,id))
+
   foldlExp(f:[AnnotativeExpression, AnnotativeExpression -> AnnotativeExpression], ae:AnnotativeExpression, l:list[AnnotativeExpression]) : RECURSIVE AnnotativeExpression =
     CASES l OF
       null: ae,
@@ -153,16 +170,22 @@ BEGIN
     ENDCASES
     MEASURE length(l)
 
-  sigma_(ce:CompositionalExpression, c:Conf) : RECURSIVE Property =
+  sigma_r(ce:CompositionalExpression, idt:nat, c:Conf) : RECURSIVE Property =
     sigma(
 	foldlExp(
 	      partialExpComposition,
-	      topExp(ce),
-	      map(LAMBDA(p:PairExp):IF ( c(pc(p)) ) THEN BaseExpression(sigma_(ce(p),c)) ELSE BaseExpression(emptyproperty) ENDIF, dependentsExp(ce, topExp(ce)))
+	      ce`E(ce`top),
+	      map(LAMBDA(p:Pair):IF ( c(p`pc) ) THEN BaseExpression(sigma_r(ce, p`idt, c)) ELSE BaseExpression(emptyproperty) ENDIF,
+	          dependentsExp(ce, idt)
+	      )
 	),
         c
     )
-    MEASURE length(dependentsExp(ce, topExp(ce)))
+    MEASURE top(ce) BY ord(ce)
+
+  sigma_(ce:CompositionalExpression, c:Conf) : Property =
+    sigma_r(ce, ce`top, c)
+
 
   IMPORTING CompositionalFunctor[nat,AnnotativeModel,AnnotativeExpression]
   analyzeCM(cm) : CompositionalExpression = fmap(hatAlpha,cm)
