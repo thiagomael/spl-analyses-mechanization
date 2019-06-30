@@ -99,16 +99,25 @@ partialExpComposition :: PartialComposition Property
 partialExpComposition ae e = ae
 
 
-{- *****ASSUMPTION to be encoded in PVS: **** really needed ??? intuitively, this is some kind of local assumption
-   hatAlpha (partialModelComposition m1 m2 ) = partialExpComposition (hatAlpha m1) (hatAlpha m2)
-   This assumption establishes an hatAlpha as a monomorphism between AnnotativeModel and AnnotativeExpression
-   in which the respective morphisms involve the partial composition operations. In short, the assumption is
-   that partial composition of models and expressions must preserve the correspondence between models and 
-   expressions established by the analysis function. This will probably by needed in the proof of the commuitative 
-   property for this quadrant.    Hint: the definitions of pi' and sigma' below are quite similar -}
+{- *****ASSUMPTION to be encoded in PVS: 
 
---assumption :: AnnotativeModel -> AnnotativeModel -> Bool
---assumption m1 m2 = hatAlpha (partialModelComposition m1 m2 ) == partialExpComposition (hatAlpha m1) (hatAlpha m2)
+   alpha (partialModelComposition pm1 pm2 ) = partialExpComposition (alpha pm1) (alpha pm2) 
+   
+   Essentially, this means that alpha is compositional. In other words, alpha is a monophormism between Product and Property,
+   where the respective partial compositions preserve alpha. This might be interpreted intuitively, since the left-hand side
+   deals with compositional analysis, whose definition on the compositional model maps hatAlpha on the the underlying functor,
+   and hatAlpha is based on alpha.
+   
+   *** Hint: The aforementioned assumption will most likely be needed to prove the commutativity of the upper-left quadrant 
+             (feature-product x product). As discussed in the meeting, we will also probably need the 
+			 previous result (commutativity of family-product x product). This situation is similar to Theorem 5 in the 
+			 concrete theory and its proof. So the proof of the commutativity of the upper-left quadrant could proceed 
+			 by structural induction on the compostional model along the well-founded relation. In the base, case the 
+			 compositional model amounts to just the top,  so analyzeCM will rewrite to hatAlpha. Then, using the
+             previous result (commutativity of the top-right quadrant), the proof concludes.  In the inductive step,
+			 we could additionally  use the aforementioned assumption. 
+   
+-}
 
 -- a well-founded functor has a top element and dependents of a given node.
 class (Functor t) => WellFoundedFunctor t where 
