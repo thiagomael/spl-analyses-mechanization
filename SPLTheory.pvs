@@ -192,6 +192,17 @@ BEGIN
   
   commutative_feature_product_product: THEOREM sigma_(analyzeCM(cModel), conf) = alpha(pi_(cModel, conf))
 
+
+
+
+
+
+
+
+
+
+
+
   %% FAMILY - ANNOTATIVE
 
   PropertyADD : TYPE+

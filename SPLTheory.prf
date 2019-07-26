@@ -116,15 +116,144 @@
  (sigma_r_TCC3 0
   (sigma_r_TCC3-1 nil 3769508394 ("" (subtype-tcc) nil nil) nil nil))
  (commutative_feature_product_product 0
+  (commutative_feature_product_product-3 "" 3773155207
+   ("" (skolem 1 (cm conf))
+    (("" (expand pi_)
+      (("" (expand sigma_)
+        (("" (expand sigma_r)
+          (("" (expand pi_r)
+            ((""
+              (case-replace
+               "dependents(cm, cm`top)=dependentsExp(analyzeCM(cm), analyzeCM(cm)`top)")
+              (("1"
+                (generalize
+                 "dependentsExp(analyzeCM(cm), analyzeCM(cm)`top)" dep
+                 "{l:list[Pair] | dependentsExp(analyzeCM(cm), analyzeCM(cm)`top) = l}")
+                (("1" (expand foldl) (("1" (postpone) nil nil)) nil))
+                nil)
+               ("2" (postpone) nil nil))
+              nil))
+            nil))
+          nil))
+        nil))
+      nil))
+    nil)
+   nil shostak)
   (commutative_feature_product_product-2 "measure_induction" 3763472700
    ("" (skolem 1 (cm conf))
     (("" (lemma "wf_induction[nat, cm`ord].wf_induction")
-      (("" (instantiate -1 "idt(cm)")
-        (("" (bddsimp)
-          (("1" (instantiate -1 "top(cm)")
-            (("1" (expand sigma_) (("1" (postpone) nil nil)) nil)) nil)
-           ("2" (skolem 1 x)
-            (("2" (flatten) (("2" (postpone) nil nil)) nil)) nil))
+      (("" (expand sigma_)
+        (("" (expand pi_)
+          ((""
+            (instantiate -1
+             "LAMBDA(i:nat):cm`idt(i) IMPLIES sigma_r(analyzeCM(cm), i, conf) = alpha(pi_r(cm, i, conf))")
+            (("" (split)
+              (("1" (expand analyzeCM 1 2)
+                (("1" (expand fmap 1)
+                  (("1" (instantiate -1 "top(cm)")
+                    (("1" (assert) nil nil)) nil))
+                  nil))
+                nil)
+               ("2" (hide 2)
+                (("2" (skolem 1 x)
+                  (("2" (flatten)
+                    (("2"
+                      (case "EXISTS(y:nat): cm`ord(y,x) AND cm`idt(y)")
+                      (("1" (skolem -1 y)
+                        (("1" (flatten)
+                          (("1" (instantiate -3 y)
+                            (("1" (assert)
+                              (("1"
+                                (expand sigma_r 1)
+                                (("1"
+                                  (expand pi_r 1)
+                                  (("1"
+                                    (expand dependents)
+                                    (("1"
+                                      (expand set2list)
+                                      (("1"
+                                        (case
+                                         "empty?(dependentes(cm, x))")
+                                        (("1"
+                                          (assert)
+                                          (("1"
+                                            (expand analyzeCM 1 4)
+                                            (("1"
+                                              (expand fmap 1)
+                                              (("1"
+                                                (expand dependentsExp)
+                                                (("1"
+                                                  (expand set2list)
+                                                  (("1"
+                                                    (assert)
+                                                    (("1"
+                                                      (case
+                                                       "empty?(dependentesExp((# idt := idt(cm),
+                                                     E
+                                                     := LAMBDA
+                                                        (x: nat):
+                                                        hatAlpha(E(cm)(x)),
+                                                     ord := ord(cm),
+                                                     top := top(cm) #),
+                                                  x))")
+                                                      (("1"
+                                                        (assert)
+                                                        (("1"
+                                                          (expand map)
+                                                          (("1"
+                                                            (expand
+                                                             foldl)
+                                                            (("1"
+                                                              (expand
+                                                               foldlExp)
+                                                              (("1"
+                                                                (expand
+                                                                 analyzeCM
+                                                                 1)
+                                                                (("1"
+                                                                  (expand
+                                                                   fmap
+                                                                   1)
+                                                                  (("1"
+                                                                    (use
+                                                                     "commutative_product_family_product")
+                                                                    nil
+                                                                    nil))
+                                                                  nil))
+                                                                nil))
+                                                              nil))
+                                                            nil))
+                                                          nil))
+                                                        nil)
+                                                       ("2"
+                                                        (postpone)
+                                                        nil
+                                                        nil))
+                                                      nil))
+                                                    nil))
+                                                  nil))
+                                                nil))
+                                              nil))
+                                            nil))
+                                          nil)
+                                         ("2" (postpone) nil nil)
+                                         ("3" (postpone) nil nil))
+                                        nil))
+                                      nil))
+                                    nil))
+                                  nil))
+                                nil))
+                              nil))
+                            nil))
+                          nil))
+                        nil)
+                       ("2" (postpone) nil nil))
+                      nil))
+                    nil))
+                  nil))
+                nil))
+              nil))
+            nil))
           nil))
         nil))
       nil))
