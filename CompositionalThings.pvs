@@ -9,7 +9,8 @@ BEGIN
 
   CompositionalThing[T:TYPE] : TYPE =
       [# idt : finite_sets[R].finite_set, E : [R->T], ord : (orders[R].well_founded?), top : (idt) #]
-      
+
+
 END CompositionalThings
 
 

@@ -71,6 +71,7 @@ BEGIN
   n : VAR nat
 
   isomorphismModelExp: AXIOM hatAlpha(partialModelComposition(m1,m2)) = partialExpComposition(hatAlpha(m1),hatAlpha(m2))
+  
 
   IMPORTING CompositionalThings[nat]
   CompositionalModel : TYPE  = CompositionalThing[AnnotativeModel]
@@ -122,6 +123,13 @@ BEGIN
 %    IF empty?(s) THEN am ELSE foldls(f, f(am, x), remove(x,s)) ENDIF  WHERE x = choose(s)
 %    MEASURE card(s)
 
+% fold[](f:[T, T -> T], elm:T, l:list[T]) : RECURSIVE T =
+%    CASES l OF
+%      null: elm,
+%      cons(x, xs): fold(f, f(elm,x), xs)
+%    ENDCASES
+%    MEASURE length(l)
+
   foldl(f:[AnnotativeModel, AnnotativeModel -> AnnotativeModel], am:AnnotativeModel, l:list[AnnotativeModel]) : RECURSIVE AnnotativeModel =
     CASES l OF
       null: am,
@@ -133,7 +141,7 @@ BEGIN
     pi(
 	foldl(
 	      partialModelComposition,
-	      cm`E(cm`top),
+	      cm`E(idt),
 	      map(LAMBDA(p:Pair):IF ( c(p`pc) ) THEN ModelBase(pi_r(cm, p`idt, c)) ELSE ModelBase(emptyproduct) ENDIF,
 	          dependents(cm, idt)
 	      )
@@ -174,7 +182,7 @@ BEGIN
     sigma(
 	foldlExp(
 	      partialExpComposition,
-	      ce`E(ce`top),
+	      ce`E(idt),
 	      map(LAMBDA(p:Pair):IF ( c(p`pc) ) THEN BaseExpression(sigma_r(ce, p`idt, c)) ELSE BaseExpression(emptyproperty) ENDIF,
 	          dependentsExp(ce, idt)
 	      )
@@ -191,13 +199,6 @@ BEGIN
   analyzeCM(cm) : CompositionalExpression = fmap(hatAlpha,cm)
   
   commutative_feature_product_product: THEOREM sigma_(analyzeCM(cModel), conf) = alpha(pi_(cModel, conf))
-
-
-
-
-
-
-
 
 
 
