@@ -1,0 +1,79 @@
+;;; Proof commutative_feature_product_product-4 for formula SPLTheory.commutative_feature_product_product
+;;; developed with shostak decision procedures
+(""
+ (skolem 1 (cm c))
+ (expand pi_)
+ (expand sigma_)
+ (expand sigma_r)
+ (expand pi_r)
+ (lemma "commutative_product_family_product")
+ (instantiate -1 (c _))
+ (instantiate -1
+  "foldl(partialModelComposition, cm`E(cm`top),
+                        map(LAMBDA (p: Pair):
+                              IF (c(p`pc)) THEN ModelBase(pi_r(cm, p`idt, c))
+                              ELSE ModelBase(emptyproduct)
+                              ENDIF,
+                            dependents(cm, cm`top)))")
+ (replace -1 1 RL)
+ (hide -1)
+ (case-replace
+  "foldlExp(partialExpComposition,
+                       analyzeCM(cm)`E(analyzeCM(cm)`top),
+                       map(LAMBDA (p: Pair):
+                             IF (c(p`pc))
+                               THEN BaseExpression(sigma_r
+                                                   (analyzeCM(cm), p`idt, c))
+                             ELSE BaseExpression(emptyproperty)
+                             ENDIF,
+                           dependentsExp(analyzeCM(cm), analyzeCM(cm)`top)))=hatAlpha(foldl(partialModelComposition, cm`E(cm`top),
+                              map(LAMBDA (p: Pair):
+                                    IF (c(p`pc))
+                                      THEN ModelBase(pi_r(cm, p`idt, c))
+                                    ELSE ModelBase(emptyproduct)
+                                    ENDIF,
+                                  dependents(cm, cm`top))))")
+ (hide 2)
+ (expand analyzeCM)
+ (expand fmap 1 1)
+ (expand fmap 1 1)
+ (lemma dependentsEqual)
+ (instantiate -1 cm)
+ (replace -1 1 RL)
+ (lemma isomorphismModelExpList)
+ (instantiate -1
+  ("cm`E(cm`top)"
+   "map(LAMBDA (p: Pair):
+                               IF (c(p`pc)) THEN ModelBase(pi_r(cm, p`idt, c))
+                               ELSE ModelBase(emptyproduct)
+                               ENDIF,
+                             dependents(cm, cm`top))"))
+ (replace -1 1 RL)
+ (case-replace
+  "map(LAMBDA (p: Pair):
+                       IF (c(p`pc))
+                         THEN BaseExpression(sigma_r
+                                             (fmap(hatAlpha, cm), p`idt, c))
+                       ELSE BaseExpression(emptyproperty)
+                       ENDIF,
+                     dependents(cm, cm`top))=map(hatAlpha,
+                      map(LAMBDA (p: Pair):
+                            IF (c(p`pc)) THEN ModelBase(pi_r(cm, p`idt, c))
+                            ELSE ModelBase(emptyproduct)
+                            ENDIF,
+                          dependents(cm, cm`top)))")
+ (hide 2)
+ (hide -1)
+ (hide -1)
+ (generalize "dependents(cm, cm`top)" "l")
+ (induct l)
+ (("1" (expand map) (propax))
+  ("2"
+   (skolem 1 (hd tl))
+   (flatten)
+   (expand map +)
+   (decompose-equality 1)
+   (lift-if)
+   (bddsimp)
+   (("1" (expand hatAlpha 1 2) (decompose-equality 1) (postpone))
+    ("2" (expand hatAlpha 2) (postpone))))))
