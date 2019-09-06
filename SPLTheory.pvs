@@ -197,7 +197,15 @@ BEGIN
 
   IMPORTING CompositionalFunctor[nat,AnnotativeModel,AnnotativeExpression]
   analyzeCM(cm) : CompositionalExpression = fmap(hatAlpha,cm)
-  
+
+  getPCequal: LEMMA getPC(cm`E(n)) = getPC(hatAlpha(E(cm)(n)))
+
+  topEqual : LEMMA cm`top = fmap(hatAlpha, cm)`top
+
+  dependentesEqual: LEMMA dependentes(cm, cm`top) = dependentesExp(fmap(hatAlpha, cm), fmap(hatAlpha, cm)`top)
+
+  dependentsEqual: LEMMA dependents(cm, cm`top) = dependentsExp(fmap(hatAlpha, cm), fmap(hatAlpha, cm)`top)
+
   commutative_feature_product_product: THEOREM sigma_(analyzeCM(cModel), conf) = alpha(pi_(cModel, conf))
 
 
