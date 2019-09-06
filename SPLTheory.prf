@@ -259,17 +259,13 @@
      nil)
     (boolean nonempty-type-decl nil booleans nil)
     (number nonempty-type-decl nil numbers nil)
-    (getPCequal formula-decl nil SPLTheory nil)
-    (getPCi const-decl "PresenceCondition" SPLTheory nil)
-    (getPCi const-decl "PresenceCondition" SPLTheory nil)
+    (getPCequal formula-decl nil SPLTheory nil) nil nil
     (PresenceCondition nonempty-type-decl nil SPLTheory nil)
-    (Pair type-eq-decl nil SPLTheory nil)
-    (getPC const-decl "PresenceCondition" SPLTheory nil)
+    (Pair type-eq-decl nil SPLTheory nil) nil
     (hatAlpha def-decl "AnnotativeExpression" SPLTheory nil)
     (fmap const-decl "CompositionalThing[U]" CompositionalFunctor nil)
     (CompositionalThing type-eq-decl nil CompositionalThings nil)
-    (AnnotativeExpression type-decl nil SPLTheory nil)
-    (getPC const-decl "PresenceCondition" SPLTheory nil)
+    (AnnotativeExpression type-decl nil SPLTheory nil) nil
     (= const-decl "[T, T -> boolean]" equalities nil)
     (AND const-decl "[bool, bool -> bool]" booleans nil)
     (dependentesExp const-decl "finite_sets[Pair].finite_set" SPLTheory
@@ -353,26 +349,40 @@
                                     ((""
                                       (replace -1 1 RL)
                                       ((""
-                                        (case
-                                         "ModelBase?(E(cm)(top(cm)))")
-                                        (("1"
-                                          (expand hatAlpha 1 1)
-                                          (("1"
-                                            (assert)
-                                            (("1"
-                                              (hide -2)
-                                              (("1"
-                                                (postpone)
-                                                nil
+                                        (lemma isomorphismModelExpList)
+                                        ((""
+                                          (instantiate
+                                           -1
+                                           ("cm`E(cm`top)"
+                                            "map(LAMBDA (p: Pair):
+                            IF (c(p`pc)) THEN ModelBase(pi_r(cm, p`idt, c))
+                            ELSE ModelBase(emptyproduct)
+                            ENDIF,
+                          dependents(cm, cm`top))"))
+                                          ((""
+                                            (replace -1 1 RL)
+                                            ((""
+                                              (case-replace
+                                               "map(LAMBDA (p: Pair):
+                     IF (c(p`pc))
+                       THEN BaseExpression(sigma_r
+                                           (fmap(hatAlpha, cm), p`idt, c))
+                     ELSE BaseExpression(emptyproperty)
+                     ENDIF,
+                   dependents(cm, cm`top))=map(hatAlpha,
+                    map(LAMBDA (p: Pair):
+                          IF (c(p`pc)) THEN ModelBase(pi_r(cm, p`idt, c))
+                          ELSE ModelBase(emptyproduct)
+                          ENDIF,
+                        dependents(cm, cm`top)))")
+                                              ((""
+                                                (hide 2)
+                                                ((""
+                                                  (postpone)
+                                                  nil
+                                                  nil))
                                                 nil))
                                               nil))
-                                            nil))
-                                          nil)
-                                         ("2"
-                                          (expand hatAlpha 2 1)
-                                          (("2"
-                                            (assert)
-                                            (("2" (postpone) nil nil))
                                             nil))
                                           nil))
                                         nil))

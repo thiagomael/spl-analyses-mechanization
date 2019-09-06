@@ -60,6 +60,7 @@ BEGIN
 
   conf: VAR Conf
   vModel, am : VAR AnnotativeModel
+  l : VAR list[AnnotativeModel]
   commutative_product_family_product: THEOREM sigma(hatAlpha(vModel),conf) = alpha(pi(vModel,conf))
 
   %% COMPOSITIONAL
@@ -71,7 +72,8 @@ BEGIN
   n : VAR nat
 
   isomorphismModelExp: AXIOM hatAlpha(partialModelComposition(m1,m2)) = partialExpComposition(hatAlpha(m1),hatAlpha(m2))
-  
+
+
 
   IMPORTING CompositionalThings[nat]
   CompositionalModel : TYPE  = CompositionalThing[AnnotativeModel]
@@ -205,6 +207,8 @@ BEGIN
   dependentesEqual: LEMMA dependentes(cm, cm`top) = dependentesExp(fmap(hatAlpha, cm), fmap(hatAlpha, cm)`top)
 
   dependentsEqual: LEMMA dependents(cm, cm`top) = dependentsExp(fmap(hatAlpha, cm), fmap(hatAlpha, cm)`top)
+
+  isomorphismModelExpList: AXIOM foldlExp(partialExpComposition, hatAlpha(am), map(hatAlpha,l)) = hatAlpha(foldl(partialModelComposition, am, l))
 
   commutative_feature_product_product: THEOREM sigma_(analyzeCM(cModel), conf) = alpha(pi_(cModel, conf))
 
