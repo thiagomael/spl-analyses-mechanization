@@ -111,7 +111,7 @@ BEGIN
   %%TODO inverter ordem dos dependentes em cm`ord
   %%trocar ordem na hora do generalize
   dependentes(cm:CompositionalModel, id : { n:nat | member(n,cm`idt) } ) : finite_sets[Pair].finite_set =
-    {p: Pair | EXISTS (pc:PresenceCondition, n:nat) : cm`ord(id,n) AND p`idt=n AND p`pc = getPCi(cm,n)}
+    {p: Pair | EXISTS (pc:PresenceCondition, n:nat) : cm`ord(n,id) AND p`idt=n AND p`pc = getPCi(cm,n)}
 
   set2list(s: finite_sets[Pair].finite_set) : RECURSIVE {l:list[Pair] | length(l) = card(s) AND 
 				           FORALL(x:Pair): s(x) IFF member(x,l)} =
