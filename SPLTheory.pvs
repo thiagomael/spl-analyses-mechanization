@@ -9,7 +9,7 @@ BEGIN
   emptyproperty : Property
   nonemptyproperty?(p:Property) : bool = p /= emptyproperty
 
-  alpha: [Product -> Property]
+  alpha: {f:[Product -> Property] | f(emptyproduct)=emptyproperty}
 
   PresenceCondition: TYPE+
   truepc : PresenceCondition
@@ -80,6 +80,7 @@ BEGIN
   cModel,cm : VAR CompositionalModel
   Pair : TYPE =  [# pc : PresenceCondition, idt : nat #]
 
+
 %% dependents - receber ID, retornar lista de pares (PresenceCondition, Id)
 
 %%%%%%%
@@ -108,6 +109,12 @@ BEGIN
   getPCi(cm:CompositionalModel, id : { n:nat | member(n,cm`idt) }) : PresenceCondition =
     getPC(cm`E(id))
 
+  finitePairs: JUDGEMENT
+  FORALL (cm:CompositionalModel,id : { n:nat | member(n,cm`idt) } ):
+  {p: Pair |
+              EXISTS (pc: PresenceCondition, n: nat):
+                cm`ord(n, id) AND p`idt = n AND p`pc = getPCi(cm, n)} HAS_TYPE (is_finite[Pair])
+
   %%TODO inverter ordem dos dependentes em cm`ord
   %%trocar ordem na hora do generalize
   dependentes(cm:CompositionalModel, id : { n:nat | member(n,cm`idt) } ) : finite_sets[Pair].finite_set =
@@ -121,6 +128,8 @@ BEGIN
 
   dependents(cm:CompositionalModel, id : { n:nat | member(n,cm`idt) } ) : list[Pair] =
     set2list(dependentes(cm,id))
+
+  memberDependents: LEMMA FORALL (cm:CompositionalModel, id : { n:nat | member(n,cm`idt) }, p:{x:Pair|member(x,dependents(cm,id))}): (EXISTS (pc:PresenceCondition, n:nat) : cm`ord(n,id) AND p`idt=n AND p`pc = getPCi(cm,n))
 
 %  foldls(f:[AnnotativeModel, AnnotativeModel -> AnnotativeModel], am:AnnotativeModel, s:finite_sets[AnnotativeModel].finite_set) :
 %    RECURSIVE AnnotativeModel =
@@ -141,18 +150,20 @@ BEGIN
     ENDCASES
     MEASURE length(l)
 
-  pi_r(cm:CompositionalModel, idt:nat, c:Conf) : RECURSIVE Product =
+  
+
+  pi_r(cm:CompositionalModel, idt:(cm`idt), c:Conf) : RECURSIVE Product =
     pi(
 	foldl(
 	      partialModelComposition,
 	      cm`E(idt),
-	      map(LAMBDA(p:Pair):IF ( c(p`pc) ) THEN ModelBase(pi_r(cm, p`idt, c)) ELSE ModelBase(emptyproduct) ENDIF,
+	      map(LAMBDA(p:{par:Pair|member(par,dependents(cm, idt))}):IF ( c(p`pc) ) THEN ModelBase(pi_r(cm, p`idt, c)) ELSE ModelBase(emptyproduct) ENDIF,
 	          dependents(cm, idt)
 	      )
 	),
         c
     )
-    MEASURE top(cm) BY ord(cm)
+    MEASURE idt BY ord(cm)
 
   pi_(cm:CompositionalModel, c:Conf) : Product =
     pi_r(cm, cm`top, c)
@@ -169,11 +180,19 @@ BEGIN
   getPCi(ce:CompositionalExpression, id : { n:nat | member(n,ce`idt) }) : PresenceCondition =
     getPC(ce`E(id))
 
+  finitePairsExp: JUDGEMENT
+  FORALL (ce:CompositionalExpression,id : { n:nat | member(n,ce`idt) } ):
+  {p: Pair |
+              EXISTS (pc: PresenceCondition, n: nat):
+                ce`ord(n, id) AND p`idt = n AND p`pc = getPCi(ce, n)} HAS_TYPE (is_finite[Pair])
+
   dependentesExp(ce:CompositionalExpression, id : { n:nat | member(n,ce`idt) } ) : finite_sets[Pair].finite_set =
     {p: Pair | EXISTS (pc:PresenceCondition, n:nat) : ce`ord(n,id) AND p`idt=n AND p`pc = getPCi(ce,n)}
 
   dependentsExp(ce:CompositionalExpression, id : { n:nat | member(n,ce`idt) } ) : list[Pair] =
     set2list(dependentesExp(ce,id))
+
+  memberDependentsExp: LEMMA FORALL (ce:CompositionalExpression, id : { n:nat | member(n,ce`idt) }, p:{x:Pair|member(x,dependentsExp(ce,id))}): (EXISTS (pc:PresenceCondition, n:nat) : ce`ord(n,id) AND p`idt=n AND p`pc = getPCi(ce,n))
 
   foldlExp(f:[AnnotativeExpression, AnnotativeExpression -> AnnotativeExpression], ae:AnnotativeExpression, l:list[AnnotativeExpression]) : RECURSIVE AnnotativeExpression =
     CASES l OF
@@ -182,18 +201,18 @@ BEGIN
     ENDCASES
     MEASURE length(l)
 
-  sigma_r(ce:CompositionalExpression, idt:nat, c:Conf) : RECURSIVE Property =
+  sigma_r(ce:CompositionalExpression, idt:(ce`idt), c:Conf) : RECURSIVE Property =
     sigma(
 	foldlExp(
 	      partialExpComposition,
 	      ce`E(idt),
-	      map(LAMBDA(p:Pair):IF ( c(p`pc) ) THEN BaseExpression(sigma_r(ce, p`idt, c)) ELSE BaseExpression(emptyproperty) ENDIF,
+	      map(LAMBDA(p:{par:Pair|member(par,dependentsExp(ce, idt))}):IF ( c(p`pc) ) THEN BaseExpression(sigma_r(ce, p`idt, c)) ELSE BaseExpression(emptyproperty) ENDIF,
 	          dependentsExp(ce, idt)
 	      )
 	),
         c
     )
-    MEASURE top(ce) BY ord(ce)
+    MEASURE idt BY ord(ce)
 
   sigma_(ce:CompositionalExpression, c:Conf) : Property =
     sigma_r(ce, ce`top, c)
