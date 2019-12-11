@@ -138,89 +138,39 @@
  (dependentesEqual_TCC1 0
   (dependentesEqual_TCC1-1 nil 3776764537 ("" (subtype-tcc) nil nil)
    nil nil))
- (dependentesEqual_TCC2 0
-  (dependentesEqual_TCC2-1 nil 3776764537 ("" (subtype-tcc) nil nil)
-   nil nil))
  (dependentesEqual 0
   (dependentesEqual-1 nil 3776764544
-   ("" (skolem 1 cm)
+   ("" (skeep 1 :preds? t)
     (("" (expand dependentes)
       (("" (expand dependentesExp)
-        (("" (lemma topEqual)
-          (("" (instantiate -1 cm)
-            (("" (lemma getPCequal)
-              (("" (instantiate -1 (cm "cm`top"))
-                (("" (expand getPCi)
-                  (("" (assert)
-                    (("" (replace -2 1 RL)
-                      (("" (decompose-equality 1)
-                        (("" (bddsimp)
-                          (("1" (skolem -1 (e n))
-                            (("1" (flatten)
+        (("" (decompose-equality 1)
+          (("1" (expand getPCi)
+            (("1" (expand fmap)
+              (("1" (expand member)
+                (("1" (typepred "cm`ord")
+                  (("1" (label "ordType" -2)
+                    (("1" (bddsimp)
+                      (("1" (skolem -3 (e num))
+                        (("1" (flatten)
+                          (("1" (instantiate 1 (e num))
+                            (("1" (assert)
                               (("1"
-                                (instantiate 1 (e n))
-                                (("1"
-                                  (assert)
-                                  (("1"
-                                    (expand fmap 1)
-                                    (("1"
-                                      (replace -3)
-                                      (("1"
-                                        (expand hatAlpha 1)
-                                        (("1"
-                                          (expand getPC 1)
-                                          (("1"
-                                            (lift-if 1)
-                                            (("1"
-                                              (bddsimp)
-                                              (("1" (assert) nil nil)
-                                               ("2" (assert) nil nil))
-                                              nil))
-                                            nil))
-                                          nil))
-                                        nil))
-                                      nil))
-                                    nil))
-                                  nil))
+                                (use getPCequal)
+                                (("1" (assert) nil nil))
                                 nil))
                               nil))
-                            nil)
-                           ("2" (skolem -1 (e n))
+                            nil))
+                          nil))
+                        nil)
+                       ("2" (skolem -3 (e num))
+                        (("2" (instantiate 1 (e num))
+                          (("2" (assert)
                             (("2" (flatten)
                               (("2"
-                                (instantiate 1 (e n))
+                                (assert)
                                 (("2"
-                                  (assert)
-                                  (("2"
-                                    (replace -3)
-                                    (("2"
-                                      (bddsimp)
-                                      (("1"
-                                        (expand getPC 1)
-                                        (("1"
-                                          (expand fmap 1)
-                                          (("1"
-                                            (expand hatAlpha 1)
-                                            (("1"
-                                              (lift-if 1)
-                                              (("1"
-                                                (bddsimp)
-                                                (("1" (assert) nil nil)
-                                                 ("2"
-                                                  (assert)
-                                                  nil
-                                                  nil))
-                                                nil))
-                                              nil))
-                                            nil))
-                                          nil))
-                                        nil)
-                                       ("2"
-                                        (expand fmap -1)
-                                        (("2" (propax) nil nil))
-                                        nil))
-                                      nil))
-                                    nil))
+                                  (use getPCequal)
+                                  (("2" (assert) nil nil))
                                   nil))
                                 nil))
                               nil))
@@ -232,6 +182,26 @@
                   nil))
                 nil))
               nil))
+            nil)
+           ("2" (expand member)
+            (("2" (skeep 1 :preds? t)
+              (("2" (expand fmap)
+                (("2" (assert)
+                  (("2" (typepred "ord(cm)")
+                    (("2" (instantiate -2 (n_1 n))
+                      (("2" (assert) nil nil)) nil))
+                    nil))
+                  nil))
+                nil))
+              nil))
+            nil)
+           ("3" (skeep 1 :preds? t)
+            (("3" (expand member)
+              (("3" (typepred "ord(cm)")
+                (("3" (instantiate -2 (n_1 n)) (("3" (assert) nil nil))
+                  nil))
+                nil))
+              nil))
             nil))
           nil))
         nil))
@@ -239,13 +209,16 @@
     nil)
    ((dependentes const-decl "finite_sets[Pair].finite_set" SPLTheory
      nil)
-    (topEqual formula-decl nil SPLTheory nil)
+    nil (member const-decl "bool" sets nil)
+    (set type-eq-decl nil sets nil) nil
     (CompositionalModel type-eq-decl nil SPLTheory nil)
     (well_founded? const-decl "bool" orders nil)
     (pred type-eq-decl nil defined_types nil)
     (finite_set type-eq-decl nil finite_sets nil)
     (AnnotativeModel type-decl nil SPLTheory nil)
-    (nat nonempty-type-eq-decl nil naturalnumbers nil)
+    (= const-decl "[T, T -> boolean]" equalities nil)
+    (AND const-decl "[bool, bool -> bool]" booleans nil)
+    (IMPLIES const-decl "[bool, bool -> bool]" booleans nil)
     (>= const-decl "bool" reals nil)
     (bool nonempty-type-eq-decl nil booleans nil)
     (int nonempty-type-eq-decl nil integers nil)
@@ -257,31 +230,35 @@
     (number_field nonempty-type-from-decl nil number_fields nil)
     (number_field_pred const-decl "[number -> boolean]" number_fields
      nil)
-    (boolean nonempty-type-decl nil booleans nil)
     (number nonempty-type-decl nil numbers nil)
-    (getPCequal formula-decl nil SPLTheory nil)
-    (PresenceCondition nonempty-type-decl nil SPLTheory nil)
-    (Pair type-eq-decl nil SPLTheory nil)
     (hatAlpha def-decl "AnnotativeExpression" SPLTheory nil)
     (fmap const-decl "CompositionalThing[U]" CompositionalFunctor nil)
     (CompositionalThing type-eq-decl nil CompositionalThings nil)
-    (AnnotativeExpression type-decl nil SPLTheory nil)
-    (= const-decl "[T, T -> boolean]" equalities nil)
-    (AND const-decl "[bool, bool -> bool]" booleans nil)
+    (AnnotativeExpression type-decl nil SPLTheory nil) nil
+    (CompositionalExpression type-eq-decl nil SPLTheory nil) nil
+    (boolean nonempty-type-decl nil booleans nil)
+    (Pair type-eq-decl nil SPLTheory nil)
+    (PresenceCondition nonempty-type-decl nil SPLTheory nil)
+    (nat nonempty-type-eq-decl nil naturalnumbers nil)
+    (NOT const-decl "[bool -> bool]" booleans nil)
+    (getPCequal formula-decl nil SPLTheory nil)
+    (real_ge_is_total_order name-judgement "(total_order?[real])"
+     real_props nil)
     (dependentesExp const-decl "finite_sets[Pair].finite_set" SPLTheory
      nil))
    shostak))
  (dependentsEqual 0
   (dependentsEqual-1 nil 3776680361
-   ("" (expand dependents)
-    (("" (expand dependentsExp)
-      (("" (skolem 1 cm)
-        (("" (use dependentesEqual) (("" (assert) nil nil)) nil)) nil))
-      nil))
+   ("" (skeep 1 :preds? t)
+    (("" (expand (dependents dependentsExp))
+      (("" (rewrite "dependentesEqual") nil nil)) nil))
     nil)
    ((dependentsExp const-decl "list[Pair]" SPLTheory nil)
-    (dependentesEqual formula-decl nil SPLTheory nil)
+    (dependents const-decl "list[Pair]" SPLTheory nil)
+    (member const-decl "bool" sets nil) (set type-eq-decl nil sets nil)
     (CompositionalModel type-eq-decl nil SPLTheory nil)
+    (AND const-decl "[bool, bool -> bool]" booleans nil)
+    (IMPLIES const-decl "[bool, bool -> bool]" booleans nil)
     (well_founded? const-decl "bool" orders nil)
     (pred type-eq-decl nil defined_types nil)
     (finite_set type-eq-decl nil finite_sets nil)
@@ -300,7 +277,7 @@
      nil)
     (boolean nonempty-type-decl nil booleans nil)
     (number nonempty-type-decl nil numbers nil)
-    (dependents const-decl "list[Pair]" SPLTheory nil))
+    (dependentesEqual formula-decl nil SPLTheory nil))
    shostak))
  (commutative_feature_product_product 0
   (commutative_feature_product_product-6 "" 3784999460
@@ -410,12 +387,184 @@
                          cm`ord(n, x) AND
                           p`idt = n AND p`pc = getPCi(cm, n)})")
                                                                       (("1"
-                                                                        (postpone)
-                                                                        nil
+                                                                        (instantiate
+                                                                         -2
+                                                                         pair)
+                                                                        (("1"
+                                                                          (assert)
+                                                                          (("1"
+                                                                            (skolem
+                                                                             -2
+                                                                             (e
+                                                                              num))
+                                                                            (("1"
+                                                                              (flatten)
+                                                                              (("1"
+                                                                                (expand
+                                                                                 member)
+                                                                                (("1"
+                                                                                  (assert)
+                                                                                  (("1"
+                                                                                    (typepred
+                                                                                     "cm`ord")
+                                                                                    (("1"
+                                                                                      (instantiate
+                                                                                       -2
+                                                                                       (num
+                                                                                        x))
+                                                                                      (("1"
+                                                                                        (assert)
+                                                                                        nil
+                                                                                        nil))
+                                                                                      nil))
+                                                                                    nil))
+                                                                                  nil))
+                                                                                nil))
+                                                                              nil))
+                                                                            nil))
+                                                                          nil))
                                                                         nil)
                                                                        ("2"
-                                                                        (postpone)
-                                                                        nil
+                                                                        (typepred
+                                                                         "cm`idt")
+                                                                        (("2"
+                                                                          (typepred
+                                                                           "cm`ord")
+                                                                          (("2"
+                                                                            (hide-all-but
+                                                                             (-3
+                                                                              1))
+                                                                            (("2"
+                                                                              (expand
+                                                                               is_finite)
+                                                                              (("2"
+                                                                                (skeep
+                                                                                 -1
+                                                                                 :preds?
+                                                                                 t)
+                                                                                (("2"
+                                                                                  (instantiate
+                                                                                   1
+                                                                                   (N
+                                                                                    "LAMBDA(pair:{p: Pair |
+                     EXISTS (pc: PresenceCondition, n: nat):
+                       cm`ord(n, x) AND
+                        p`idt = n AND p`pc = getPCi(cm, n)}):f(pair`idt)"))
+                                                                                  (("1"
+                                                                                    (expand
+                                                                                     injective?)
+                                                                                    (("1"
+                                                                                      (skeep
+                                                                                       1
+                                                                                       :preds?
+                                                                                       t)
+                                                                                      (("1"
+                                                                                        (instantiate
+                                                                                         -4
+                                                                                         ("x1`idt"
+                                                                                          "x2`idt"))
+                                                                                        (("1"
+                                                                                          (assert)
+                                                                                          (("1"
+                                                                                            (decompose-equality
+                                                                                             1)
+                                                                                            (("1"
+                                                                                              (skolem
+                                                                                               -1
+                                                                                               (pc1
+                                                                                                n1))
+                                                                                              (("1"
+                                                                                                (flatten)
+                                                                                                (("1"
+                                                                                                  (skolem
+                                                                                                   -4
+                                                                                                   (pc2
+                                                                                                    n2))
+                                                                                                  (("1"
+                                                                                                    (flatten)
+                                                                                                    (("1"
+                                                                                                      (replace
+                                                                                                       -2)
+                                                                                                      (("1"
+                                                                                                        (replace
+                                                                                                         -5)
+                                                                                                        (("1"
+                                                                                                          (replace
+                                                                                                           -8)
+                                                                                                          (("1"
+                                                                                                            (assert)
+                                                                                                            nil
+                                                                                                            nil))
+                                                                                                          nil))
+                                                                                                        nil))
+                                                                                                      nil))
+                                                                                                    nil))
+                                                                                                  nil))
+                                                                                                nil))
+                                                                                              nil))
+                                                                                            nil))
+                                                                                          nil))
+                                                                                        nil))
+                                                                                      nil))
+                                                                                    nil)
+                                                                                   ("2"
+                                                                                    (skeep
+                                                                                     1
+                                                                                     :preds?
+                                                                                     t)
+                                                                                    (("2"
+                                                                                      (skeep
+                                                                                       -1
+                                                                                       :preds?
+                                                                                       t)
+                                                                                      (("2"
+                                                                                        (typepred
+                                                                                         "cm`ord")
+                                                                                        (("2"
+                                                                                          (instantiate
+                                                                                           -2
+                                                                                           (n
+                                                                                            x))
+                                                                                          (("2"
+                                                                                            (assert)
+                                                                                            nil
+                                                                                            nil))
+                                                                                          nil))
+                                                                                        nil))
+                                                                                      nil))
+                                                                                    nil)
+                                                                                   ("3"
+                                                                                    (typepred
+                                                                                     "cm`ord")
+                                                                                    (("3"
+                                                                                      (skeep
+                                                                                       1
+                                                                                       :preds?
+                                                                                       t)
+                                                                                      (("3"
+                                                                                        (instantiate
+                                                                                         -3
+                                                                                         (n
+                                                                                          x))
+                                                                                        (("3"
+                                                                                          (assert)
+                                                                                          (("3"
+                                                                                            (expand
+                                                                                             member)
+                                                                                            (("3"
+                                                                                              (assert)
+                                                                                              nil
+                                                                                              nil))
+                                                                                            nil))
+                                                                                          nil))
+                                                                                        nil))
+                                                                                      nil))
+                                                                                    nil))
+                                                                                  nil))
+                                                                                nil))
+                                                                              nil))
+                                                                            nil))
+                                                                          nil))
                                                                         nil)
                                                                        ("3"
                                                                         (expand
@@ -429,8 +578,18 @@
                                                                           (("3"
                                                                             (flatten)
                                                                             (("3"
-                                                                              (postpone)
-                                                                              nil
+                                                                              (typepred
+                                                                               "cm`ord")
+                                                                              (("3"
+                                                                                (instantiate
+                                                                                 -2
+                                                                                 (n
+                                                                                  x))
+                                                                                (("3"
+                                                                                  (assert)
+                                                                                  nil
+                                                                                  nil))
+                                                                                nil))
                                                                               nil))
                                                                             nil))
                                                                           nil))
@@ -581,7 +740,10 @@
                                                 nil))
                                               nil))
                                             nil)
-                                           ("2" (postpone) nil nil))
+                                           ("2"
+                                            (rewrite dependentsEqual)
+                                            nil
+                                            nil))
                                           nil))
                                         nil))
                                       nil))

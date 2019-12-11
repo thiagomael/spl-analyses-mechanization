@@ -8,7 +8,7 @@ BEGIN
       %teoria concreta de compositional -> olhar TCCs (well_founded_lemmas e compositional_pmc_order)
 
   CompositionalThing[T:TYPE] : TYPE =
-      [# idt : finite_sets[R].finite_set, E : [R->T], ord : (orders[R].well_founded?), top : (idt) #]
+      [# idt : finite_sets[R].finite_set, E : [R->T], ord : { < :(orders[R].well_founded?)|FORALL(x,y:R):<(x,y) IMPLIES idt(x) AND idt(y)}, top : (idt) #]
 
 
 END CompositionalThings

@@ -170,7 +170,7 @@ BEGIN
     getPC(ce`E(id))
 
   dependentesExp(ce:CompositionalExpression, id : { n:nat | member(n,ce`idt) } ) : finite_sets[Pair].finite_set =
-    {p: Pair | EXISTS (pc:PresenceCondition, n:nat) : ce`ord(id,n) AND p`idt=n AND p`pc = getPCi(ce,n)}
+    {p: Pair | EXISTS (pc:PresenceCondition, n:nat) : ce`ord(n,id) AND p`idt=n AND p`pc = getPCi(ce,n)}
 
   dependentsExp(ce:CompositionalExpression, id : { n:nat | member(n,ce`idt) } ) : list[Pair] =
     set2list(dependentesExp(ce,id))
@@ -206,9 +206,9 @@ BEGIN
 
   topEqual : LEMMA cm`top = fmap(hatAlpha, cm)`top
 
-  dependentesEqual: LEMMA dependentes(cm, cm`top) = dependentesExp(fmap(hatAlpha, cm), fmap(hatAlpha, cm)`top)
+  dependentesEqual: LEMMA FORALL (n:nat | member(n, cm`idt)): dependentes(cm, n) = dependentesExp(fmap(hatAlpha, cm), n)
 
-  dependentsEqual: LEMMA dependents(cm, cm`top) = dependentsExp(fmap(hatAlpha, cm), fmap(hatAlpha, cm)`top)
+  dependentsEqual: LEMMA FORALL (n:nat | member(n, cm`idt)):  dependents(cm, n) = dependentsExp(fmap(hatAlpha, cm), n)
 
   isomorphismModelExpList: AXIOM foldlExp(partialExpComposition, hatAlpha(am), map(hatAlpha,l)) = hatAlpha(foldl(partialModelComposition, am, l))
 
