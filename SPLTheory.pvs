@@ -231,12 +231,32 @@ BEGIN
 
   isomorphismModelExpList: AXIOM foldlExp(partialExpComposition, hatAlpha(am), map(hatAlpha,l)) = hatAlpha(foldl(partialModelComposition, am, l))
 
-  %%TODO introduzir um lemma afirmando que todo cara do dependents eh cm`ord(x, cara)
+
+  generalizar: LEMMA
+    FORALL(cm:CompositionalModel,x:(cm`idt),c:Conf,ls:list[Pair]):
+      (FORALL (y: (cm`idt)):
+        cm`ord(y, x) IMPLIES
+         sigma_r(fmap(hatAlpha, cm), y, c) = alpha(pi_r(cm, y, c)))
+      AND
+      (FORALL(p:Pair):member(p,ls) IMPLIES member(p`idt, cm`idt) AND cm`ord(p`idt,x))
+      IMPLIES
+      map(LAMBDA (p:
+                    {par: Pair |
+                             member(par,ls)}):
+            IF (c(p`pc))
+              THEN BaseExpression(sigma_r(fmap(hatAlpha, cm), p`idt, c))
+            ELSE BaseExpression(emptyproperty)
+            ENDIF,
+          ls)
+       =
+       map(hatAlpha,
+           map(LAMBDA (p: {par: Pair | member(par, ls)}):
+                 IF (c(p`pc)) THEN ModelBase(pi_r(cm, p`idt, c))
+                 ELSE ModelBase(emptyproduct)
+                 ENDIF,
+               ls))
+
   commutative_feature_product_product: THEOREM sigma_(analyzeCM(cModel), conf) = alpha(pi_(cModel, conf))
-
-
-
-
 
   %% FAMILY - ANNOTATIVE
 
