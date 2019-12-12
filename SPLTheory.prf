@@ -130,7 +130,101 @@
     (member const-decl "bool" sets nil))
    nil))
  (finitePairs 0
-  (finitePairs-1 nil 3785084526 ("" (judgement-tcc) nil nil) nil nil))
+  (finitePairs-1 nil 3785084526
+   ("" (skeep 1 :preds? t)
+    (("" (expand member)
+      (("" (typepred "cm`ord")
+        (("" (expand is_finite)
+          (("" (typepred "cm`idt")
+            (("" (expand is_finite -1)
+              (("" (skeep -1 :preds? t)
+                ((""
+                  (instantiate 1
+                   (N "LAMBDA(pair:{p: Pair |
+                     EXISTS (pc: PresenceCondition, n: nat):
+                       cm`ord(n, id) AND
+                        p`idt = n AND p`pc = getPCi(cm, n)}):f(pair`idt)"))
+                  (("1" (expand injective?)
+                    (("1" (skeep 1 :preds? t)
+                      (("1" (instantiate -4 ("x1`idt" "x2`idt"))
+                        (("1" (assert)
+                          (("1" (skolem -1 (pc1 n1))
+                            (("1" (skolem -2 (pc2 n2))
+                              (("1"
+                                (flatten)
+                                (("1"
+                                  (assert)
+                                  (("1"
+                                    (decompose-equality 1)
+                                    nil
+                                    nil))
+                                  nil))
+                                nil))
+                              nil))
+                            nil))
+                          nil))
+                        nil))
+                      nil))
+                    nil)
+                   ("2" (skeep 1 :preds? t)
+                    (("2" (skeep -1 :preds? t)
+                      (("2" (instantiate -8 (n id))
+                        (("2" (assert) nil nil)) nil))
+                      nil))
+                    nil)
+                   ("3" (skeep 1 :preds? t)
+                    (("3" (instantiate -7 (n id))
+                      (("3" (assert)
+                        (("3" (expand member) (("3" (propax) nil nil))
+                          nil))
+                        nil))
+                      nil))
+                    nil))
+                  nil))
+                nil))
+              nil))
+            nil))
+          nil))
+        nil))
+      nil))
+    nil)
+   ((member const-decl "bool" sets nil)
+    (is_finite const-decl "bool" finite_sets nil)
+    (real_ge_is_total_order name-judgement "(total_order?[real])"
+     real_props nil)
+    (injective? const-decl "bool" functions nil)
+    (PresenceCondition nonempty-type-decl nil SPLTheory nil)
+    (Pair type-eq-decl nil SPLTheory nil)
+    (= const-decl "[T, T -> boolean]" equalities nil)
+    (getPCi const-decl "PresenceCondition" SPLTheory nil)
+    (< const-decl "bool" reals nil)
+    (below type-eq-decl nil nat_types nil)
+    (cm skolem-const-decl "CompositionalModel" SPLTheory nil)
+    (id skolem-const-decl "{n: nat | member(n, cm`idt)}" SPLTheory nil)
+    (set type-eq-decl nil sets nil)
+    (boolean nonempty-type-decl nil booleans nil)
+    (bool nonempty-type-eq-decl nil booleans nil)
+    (NOT const-decl "[bool -> bool]" booleans nil)
+    (number nonempty-type-decl nil numbers nil)
+    (number_field_pred const-decl "[number -> boolean]" number_fields
+     nil)
+    (number_field nonempty-type-from-decl nil number_fields nil)
+    (real_pred const-decl "[number_field -> boolean]" reals nil)
+    (real nonempty-type-from-decl nil reals nil)
+    (rational_pred const-decl "[real -> boolean]" rationals nil)
+    (rational nonempty-type-from-decl nil rationals nil)
+    (integer_pred const-decl "[rational -> boolean]" integers nil)
+    (int nonempty-type-eq-decl nil integers nil)
+    (>= const-decl "bool" reals nil)
+    (nat nonempty-type-eq-decl nil naturalnumbers nil)
+    (pred type-eq-decl nil defined_types nil)
+    (well_founded? const-decl "bool" orders nil)
+    (AnnotativeModel type-decl nil SPLTheory nil)
+    (finite_set type-eq-decl nil finite_sets nil)
+    (IMPLIES const-decl "[bool, bool -> bool]" booleans nil)
+    (AND const-decl "[bool, bool -> bool]" booleans nil)
+    (CompositionalModel type-eq-decl nil SPLTheory nil))
+   nil))
  (set2list_TCC1 0
   (set2list_TCC1-1 nil 3769508394
    ("" (skeep 1 :preds? t)
@@ -337,6 +431,7 @@
       nil))
     nil)
    ((dependents const-decl "list[Pair]" SPLTheory nil)
+    (getPCi const-decl "PresenceCondition" SPLTheory nil)
     (member const-decl "bool" sets nil)
     (CompositionalModel type-eq-decl nil SPLTheory nil)
     (IMPLIES const-decl "[bool, bool -> bool]" booleans nil)
@@ -576,7 +671,88 @@
      real_props nil))
    nil))
  (finitePairsExp 0
-  (finitePairsExp-1 nil 3785085739 ("" (judgement-tcc) nil nil) nil
+  (finitePairsExp-1 nil 3785085739
+   ("" (skeep 1 :preds? t)
+    (("" (expand member)
+      (("" (typepred "ce`ord")
+        (("" (typepred "ce`idt")
+          (("" (expand is_finite)
+            (("" (skeep -1 :preds? t)
+              ((""
+                (instantiate 1
+                 (N "LAMBDA(pair:{p: Pair |
+                        EXISTS (pc: PresenceCondition, n: nat):
+                          ce`ord(n, id) AND
+                           p`idt = n AND p`pc = getPCi(ce, n)}):f(pair`idt)"))
+                (("1" (expand injective?)
+                  (("1" (skeep 1 :preds? t)
+                    (("1" (instantiate -4 ("x1`idt" "x2`idt"))
+                      (("1" (skolem -1 (pc1 n1))
+                        (("1" (skolem -2 (pc2 n2))
+                          (("1" (decompose-equality 1)
+                            (("1" (flatten) (("1" (assert) nil nil))
+                              nil))
+                            nil))
+                          nil))
+                        nil))
+                      nil))
+                    nil))
+                  nil)
+                 ("2" (skeep 1 :preds? t)
+                  (("2" (skeep -1 :preds? t)
+                    (("2" (instantiate -8 (n id))
+                      (("2" (assert) nil nil)) nil))
+                    nil))
+                  nil)
+                 ("3" (expand member)
+                  (("3" (skeep 1 :preds? t)
+                    (("3" (instantiate -7 (n id))
+                      (("3" (assert) nil nil)) nil))
+                    nil))
+                  nil))
+                nil))
+              nil))
+            nil))
+          nil))
+        nil))
+      nil))
+    nil)
+   ((member const-decl "bool" sets nil)
+    (is_finite const-decl "bool" finite_sets nil)
+    (set type-eq-decl nil sets nil)
+    (id skolem-const-decl "{n: nat | member(n, ce`idt)}" SPLTheory nil)
+    (ce skolem-const-decl "CompositionalExpression" SPLTheory nil)
+    (below type-eq-decl nil nat_types nil)
+    (< const-decl "bool" reals nil)
+    (getPCi const-decl "PresenceCondition" SPLTheory nil)
+    (= const-decl "[T, T -> boolean]" equalities nil)
+    (Pair type-eq-decl nil SPLTheory nil)
+    (PresenceCondition nonempty-type-decl nil SPLTheory nil)
+    (injective? const-decl "bool" functions nil)
+    (real_ge_is_total_order name-judgement "(total_order?[real])"
+     real_props nil)
+    (boolean nonempty-type-decl nil booleans nil)
+    (bool nonempty-type-eq-decl nil booleans nil)
+    (NOT const-decl "[bool -> bool]" booleans nil)
+    (number nonempty-type-decl nil numbers nil)
+    (number_field_pred const-decl "[number -> boolean]" number_fields
+     nil)
+    (number_field nonempty-type-from-decl nil number_fields nil)
+    (real_pred const-decl "[number_field -> boolean]" reals nil)
+    (real nonempty-type-from-decl nil reals nil)
+    (rational_pred const-decl "[real -> boolean]" rationals nil)
+    (rational nonempty-type-from-decl nil rationals nil)
+    (integer_pred const-decl "[rational -> boolean]" integers nil)
+    (int nonempty-type-eq-decl nil integers nil)
+    (>= const-decl "bool" reals nil)
+    (nat nonempty-type-eq-decl nil naturalnumbers nil)
+    (pred type-eq-decl nil defined_types nil)
+    (well_founded? const-decl "bool" orders nil)
+    (AnnotativeExpression type-decl nil SPLTheory nil)
+    (finite_set type-eq-decl nil finite_sets nil)
+    (IMPLIES const-decl "[bool, bool -> bool]" booleans nil)
+    (AND const-decl "[bool, bool -> bool]" booleans nil)
+    (CompositionalExpression type-eq-decl nil SPLTheory nil))
    nil))
  (memberDependentsExp 0
   (memberDependentsExp-1 nil 3785086020
@@ -603,6 +779,7 @@
       nil))
     nil)
    ((dependentsExp const-decl "list[Pair]" SPLTheory nil)
+    (getPCi const-decl "PresenceCondition" SPLTheory nil)
     (member const-decl "bool" sets nil)
     (CompositionalExpression type-eq-decl nil SPLTheory nil)
     (IMPLIES const-decl "[bool, bool -> bool]" booleans nil)
@@ -818,7 +995,10 @@
         nil))
       nil))
     nil)
-   ((hatAlpha def-decl "AnnotativeExpression" SPLTheory nil)) shostak))
+   ((getPC const-decl "PresenceCondition" SPLTheory nil)
+    (getPC const-decl "PresenceCondition" SPLTheory nil)
+    (hatAlpha def-decl "AnnotativeExpression" SPLTheory nil))
+   shostak))
  (topEqual 0
   (topEqual-1 nil 3776690283
    ("" (skolem 1 cm) (("" (expand fmap) (("" (propax) nil nil)) nil))
@@ -916,7 +1096,9 @@
     nil)
    ((dependentes const-decl "finite_sets[Pair].finite_set" SPLTheory
      nil)
+    (n skolem-const-decl "{n: nat | member(n, cm`idt)}" SPLTheory nil)
     (member const-decl "bool" sets nil) (set type-eq-decl nil sets nil)
+    (cm skolem-const-decl "CompositionalModel" SPLTheory nil)
     (CompositionalModel type-eq-decl nil SPLTheory nil)
     (well_founded? const-decl "bool" orders nil)
     (pred type-eq-decl nil defined_types nil)
@@ -941,7 +1123,9 @@
     (fmap const-decl "CompositionalThing[U]" CompositionalFunctor nil)
     (CompositionalThing type-eq-decl nil CompositionalThings nil)
     (AnnotativeExpression type-decl nil SPLTheory nil)
+    (getPCi const-decl "PresenceCondition" SPLTheory nil)
     (CompositionalExpression type-eq-decl nil SPLTheory nil)
+    (getPCi const-decl "PresenceCondition" SPLTheory nil)
     (boolean nonempty-type-decl nil booleans nil)
     (Pair type-eq-decl nil SPLTheory nil)
     (PresenceCondition nonempty-type-decl nil SPLTheory nil)
@@ -1186,6 +1370,135 @@
     nil)
    nil shostak))
  (commutative_feature_product_product 0
+  (commutative_feature_product_product-16 "" 3785140314
+   ("" (expand (analyzeCM sigma_ pi_))
+    (("" (skolem 1 (cm c))
+      (("" (lemma "wf_induction[(cm`idt), cm`ord].wf_induction")
+        ((""
+          (instantiate -1
+           "LAMBDA(i:(cm`idt)): sigma_r(fmap(hatAlpha, cm), i, c) = alpha(pi_r(cm, i, c))")
+          (("1" (bddsimp)
+            (("1" (instantiate -1 "cm`top")
+              (("1" (expand fmap 1 2) (("1" (propax) nil nil)) nil))
+              nil)
+             ("2" (hide 2)
+              (("2" (skeep 1 :preds? t)
+                (("2" (expand pi_r +)
+                  (("2" (expand sigma_r +)
+                    (("2" (lemma "commutative_product_family_product")
+                      (("2"
+                        (instantiate -1
+                         (c "foldl(partialModelComposition, cm`E(x),
+                                  map(LAMBDA (p:{par:Pair|member(par,dependents(cm, x))}):
+                                        IF (c(p`pc)) THEN ModelBase(pi_r(cm, p`idt, c))
+                                        ELSE ModelBase(emptyproduct)
+                                        ENDIF,
+                                      dependents(cm, x)))"))
+                        (("1" (replace -1 1 RL)
+                          (("1" (hide -1)
+                            (("1" (lemma isomorphismModelExpList)
+                              (("1"
+                                (expand fmap 1 1)
+                                (("1"
+                                  (lemma dependentsEqual)
+                                  (("1"
+                                    (instantiate -1 (cm x))
+                                    (("1"
+                                      (replace -1 1 RL)
+                                      (("1"
+                                        (instantiate -2 ("cm`E(x)" _))
+                                        (("1"
+                                          (instantiate
+                                           -2
+                                           "map(LAMBDA (p:
+                                        {par: Pair |
+                                         member(par, dependents(cm, x))}):
+                                  IF (c(p`pc))
+                                    THEN ModelBase(pi_r(cm, p`idt, c))
+                                  ELSE ModelBase(emptyproduct)
+                                  ENDIF,
+                                dependents(cm, x))")
+                                          (("1" (postpone) nil nil)
+                                           ("2"
+                                            (skolem
+                                             1
+                                             pair
+                                             :skolem-typepreds?
+                                             t)
+                                            (("2"
+                                              (flatten)
+                                              (("2"
+                                                (lemma
+                                                 memberDependents)
+                                                (("2"
+                                                  (instantiate
+                                                   -1
+                                                   (cm x pair))
+                                                  (("2"
+                                                    (skeep
+                                                     -1
+                                                     :preds?
+                                                     t)
+                                                    (("2"
+                                                      (typepred
+                                                       "cm`ord")
+                                                      (("2"
+                                                        (instantiate
+                                                         -2
+                                                         (n x))
+                                                        (("2"
+                                                          (assert)
+                                                          nil
+                                                          nil))
+                                                        nil))
+                                                      nil))
+                                                    nil))
+                                                  nil))
+                                                nil))
+                                              nil))
+                                            nil))
+                                          nil))
+                                        nil))
+                                      nil))
+                                    nil))
+                                  nil))
+                                nil))
+                              nil))
+                            nil))
+                          nil)
+                         ("2" (skolem 1 pair :skolem-typepreds? t)
+                          (("2" (flatten)
+                            (("2" (typepred "cm`ord")
+                              (("2"
+                                (lemma memberDependents)
+                                (("2"
+                                  (instantiate -1 (cm x pair))
+                                  (("2"
+                                    (skeep -1 :preds? t)
+                                    (("2"
+                                      (instantiate -6 (n x))
+                                      (("2" (assert) nil nil))
+                                      nil))
+                                    nil))
+                                  nil))
+                                nil))
+                              nil))
+                            nil))
+                          nil))
+                        nil))
+                      nil))
+                    nil))
+                  nil))
+                nil))
+              nil))
+            nil)
+           ("2" (skeep 1 :preds? t)
+            (("2" (expand fmap) (("2" (propax) nil nil)) nil)) nil))
+          nil))
+        nil))
+      nil))
+    nil)
+   nil shostak)
   (commutative_feature_product_product-15 "" 3785089107
    ("" (expand analyzeCM)
     (("" (expand sigma_)
