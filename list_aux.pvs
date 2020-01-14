@@ -10,6 +10,13 @@ list_aux_map [ T1, T2: TYPE ]
               f: [T1->T2]):
           map(f)(l) = map(f, l)
 
+  map_extensionality: LEMMA
+      FORALL (l: list[T1],
+              f1, f2: [T1->T2]):
+          (FORALL (m: T1 | member(m, l)): f1(m) = f2(m))
+            IMPLIES
+          map(f1, l) = map(f2, l)
+
   END list_aux_map
 
 list_aux_map_props [ T1, T2, T3: TYPE ]

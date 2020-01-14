@@ -21,6 +21,48 @@
     (T2 formal-type-decl nil list_aux_map nil)
     (boolean nonempty-type-decl nil booleans nil)
     (list type-decl nil list_adt nil))
+   shostak))
+ (map_extensionality 0
+  (map_extensionality-1 nil 3788032281
+   ("" (induct l)
+    (("1" (expand map) (("1" (propax) nil nil)) nil)
+     ("2" (skosimp + head tail)
+      (("2" (skeep :preds? t)
+        (("2" (inst - f1 f2)
+          (("2" (expand map +)
+            (("2" (decompose-equality 1)
+              (("1" (inst - "cons1_var!1")
+                (("1" (expand member) (("1" (propax) nil nil)) nil))
+                nil)
+               ("2" (skeep :preds? t)
+                (("2" (inst?)
+                  (("2" (expand member +) (("2" (propax) nil nil))
+                    nil))
+                  nil))
+                nil))
+              nil))
+            nil))
+          nil))
+        nil))
+      nil))
+    nil)
+   ((cons adt-constructor-decl "[[T, list] -> (cons?)]" list_adt nil)
+    (cons? adt-recognizer-decl "[list -> boolean]" list_adt nil)
+    (list_cons_extensionality formula-decl nil list_adt nil)
+    (cons1_var!1 skolem-const-decl "T1" list_aux_map nil)
+    (cons2_var!1 skolem-const-decl "list[T1]" list_aux_map nil)
+    (m skolem-const-decl "{m: T1 | member(m, cons2_var!1)}"
+     list_aux_map nil)
+    (list_induction formula-decl nil list_adt nil)
+    (T1 formal-type-decl nil list_aux_map nil)
+    (map adt-def-decl "list[T1]" list_adt_map nil)
+    (= const-decl "[T, T -> boolean]" equalities nil)
+    (member def-decl "bool" list_props nil)
+    (IMPLIES const-decl "[bool, bool -> bool]" booleans nil)
+    (bool nonempty-type-eq-decl nil booleans nil)
+    (T2 formal-type-decl nil list_aux_map nil)
+    (boolean nonempty-type-decl nil booleans nil)
+    (list type-decl nil list_adt nil))
    shostak)))
 (list_aux_map_props
  (map_composition 0
@@ -69,17 +111,10 @@
         nil))
       nil))
     nil)
-   ((cons1_var!1 skolem-const-decl "T1" list_map_type_compatibility
-     nil)
-    (cons? adt-recognizer-decl "[list -> boolean]" list_adt nil)
+   (nil (cons? adt-recognizer-decl "[list -> boolean]" list_adt nil)
     (cons adt-constructor-decl "[[T, list] -> (cons?)]" list_adt nil)
-    (cons2_var!1 skolem-const-decl "list[T1]"
-     list_map_type_compatibility nil)
-    (m skolem-const-decl "{m: T1 | member(m, cons2_var!1)}"
-     list_map_type_compatibility nil)
-    (list_induction formula-decl nil list_adt nil)
-    (T1 formal-type-decl nil list_map_type_compatibility nil)
-    (every adt-def-decl "boolean" list_adt nil)
+    nil nil (list_induction formula-decl nil list_adt nil)
+    (T1 formal-type-decl nil list_map_type_compatibility nil) nil
     (PRED type-eq-decl nil defined_types nil)
     (TT1_pred const-decl "[T1 -> boolean]" list_map_type_compatibility
      nil)
@@ -163,20 +198,14 @@
      ("3" (hide 2) (("3" (use type_conformance) nil nil)) nil))
     nil)
    ((type_conformance formula-decl nil list_map_type_compatibility nil)
-    (cons1_var!1 skolem-const-decl "T1" list_map_type_compatibility
-     nil)
-    (m skolem-const-decl "{m: T1 | member(m, cons2_var!1)}"
-     list_map_type_compatibility nil)
-    (cons2_var!1 skolem-const-decl "list[T1]"
-     list_map_type_compatibility nil)
+    nil nil nil
     (cons? adt-recognizer-decl "[list -> boolean]" list_adt nil)
     (list_cons_extensionality formula-decl nil list_adt nil)
     (cons adt-constructor-decl "[[T, list] -> (cons?)]" list_adt nil)
     (list_induction formula-decl nil list_adt nil)
     (T1 formal-type-decl nil list_map_type_compatibility nil)
     (restrict const-decl "R" restrict nil)
-    (TT1 formal-subtype-decl nil list_map_type_compatibility nil)
-    (map adt-def-decl "list[T1]" list_adt_map nil)
+    (TT1 formal-subtype-decl nil list_map_type_compatibility nil) nil
     (= const-decl "[T, T -> boolean]" equalities nil)
     (list type-decl nil list_adt nil)
     (T2 formal-type-decl nil list_map_type_compatibility nil)
@@ -186,7 +215,6 @@
     (member def-decl "bool" list_props nil)
     (TT1_pred const-decl "[T1 -> boolean]" list_map_type_compatibility
      nil)
-    (PRED type-eq-decl nil defined_types nil)
-    (every adt-def-decl "boolean" list_adt nil))
+    (PRED type-eq-decl nil defined_types nil) nil)
    shostak)))
 
