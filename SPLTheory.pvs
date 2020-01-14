@@ -232,7 +232,10 @@ BEGIN
   isomorphismModelExpList: AXIOM foldlExp(partialExpComposition, hatAlpha(am), map(hatAlpha,l)) = hatAlpha(foldl(partialModelComposition, am, l))
 
 
-  generalizar: LEMMA
+  IMPORTING list_aux_map_props,
+            list_map_type_compatibility
+
+  map_of_hatAlpha: LEMMA
     FORALL(cm:CompositionalModel,x:(cm`idt),c:Conf,ls:list[Pair]):
       (FORALL (y: (cm`idt)):
         cm`ord(y, x) IMPLIES
