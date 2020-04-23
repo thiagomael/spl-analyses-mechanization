@@ -68,10 +68,16 @@ BEGIN
   partialModelComposition: [AnnotativeModel, AnnotativeModel -> AnnotativeModel]
   partialExpComposition: [AnnotativeExpression, AnnotativeExpression -> AnnotativeExpression]
 
+  partialProductComposition: [Product, Product -> Product]
+  partialPropertyComposition: [Property, Property -> Property]
+
   m1, m2 : VAR AnnotativeModel
+  p1, p2 : VAR Product
+  l_prods : VAR list[Product]
   n : VAR nat
 
   isomorphismModelExp: AXIOM hatAlpha(partialModelComposition(m1,m2)) = partialExpComposition(hatAlpha(m1),hatAlpha(m2))
+  homomorphismProdProp: AXIOM alpha(partialProductComposition(p1,p2)) = partialPropertyComposition(alpha(p1),alpha(p2))
 
 
 
@@ -150,18 +156,22 @@ BEGIN
     ENDCASES
     MEASURE length(l)
 
+  foldlProd(f:[Product, Product -> Product], p:Product, l:list[Product]) : RECURSIVE Product =
+    CASES l OF
+      null: p,
+      cons(x, xs): foldlProd(f, f(p,x), xs)
+    ENDCASES
+    MEASURE length(l)
+
   
 
   pi_r(cm:CompositionalModel, idt:(cm`idt), c:Conf) : RECURSIVE Product =
-    pi(
-	foldl(
-	      partialModelComposition,
-	      cm`E(idt),
-	      map(LAMBDA(p:{par:Pair|member(par,dependents(cm, idt))}):IF ( c(p`pc) ) THEN ModelBase(pi_r(cm, p`idt, c)) ELSE ModelBase(emptyproduct) ENDIF,
-	          dependents(cm, idt)
-	      )
-	),
-        c
+    foldlProd(
+	partialProductComposition,
+	pi(cm`E(idt),c),
+	map(LAMBDA(p:{par:Pair|member(par,dependents(cm, idt))}):IF ( c(p`pc) ) THEN pi_r(cm, p`idt, c) ELSE emptyproduct ENDIF,
+	    dependents(cm, idt)
+	)
     )
     MEASURE idt BY ord(cm)
 
@@ -201,17 +211,21 @@ BEGIN
     ENDCASES
     MEASURE length(l)
 
+  foldlProp(f:[Property, Property -> Property], p:Property, l:list[Property]) : RECURSIVE Property =
+    CASES l OF
+      null: p,
+      cons(x, xs): foldlProp(f, f(p,x), xs)
+    ENDCASES
+    MEASURE length(l)
+
   sigma_r(ce:CompositionalExpression, idt:(ce`idt), c:Conf) : RECURSIVE Property =
-    sigma(
-	foldlExp(
-	      partialExpComposition,
-	      ce`E(idt),
-	      map(LAMBDA(p:{par:Pair|member(par,dependentsExp(ce, idt))}):IF ( c(p`pc) ) THEN BaseExpression(sigma_r(ce, p`idt, c)) ELSE BaseExpression(emptyproperty) ENDIF,
+	foldlProp(
+	      partialPropertyComposition,
+	      sigma(ce`E(idt),c),
+	      map(LAMBDA(p:{par:Pair|member(par,dependentsExp(ce, idt))}):IF ( c(p`pc) ) THEN sigma_r(ce, p`idt, c) ELSE emptyproperty ENDIF,
 	          dependentsExp(ce, idt)
 	      )
-	),
-        c
-    )
+	)
     MEASURE idt BY ord(ce)
 
   sigma_(ce:CompositionalExpression, c:Conf) : Property =
@@ -230,6 +244,7 @@ BEGIN
   dependentsEqual: LEMMA FORALL (n:nat | member(n, cm`idt)):  dependents(cm, n) = dependentsExp(fmap(hatAlpha, cm), n)
 
   isomorphismModelExpList: AXIOM foldlExp(partialExpComposition, hatAlpha(am), map(hatAlpha,l)) = hatAlpha(foldl(partialModelComposition, am, l))
+  homomorphismModelExpList: AXIOM foldlProp(partialPropertyComposition, alpha(p1), map(alpha,l_prods)) = alpha(foldlProd(partialProductComposition, p1, l_prods))
 
 
   IMPORTING list_aux_map_props,
