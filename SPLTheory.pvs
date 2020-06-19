@@ -252,37 +252,5 @@ BEGIN
   commutative_feature_product_product: THEOREM
     sigma_(analyzeCM(cModel), conf) = alpha(pi_(cModel, conf))
 
-  %% FAMILY - ANNOTATIVE
-
-  PropertyADD : TYPE+
-  toADD : [Property -> PropertyADD]
-
-  LiftedAnnotativeExpression : DATATYPE
-  BEGIN
-     LiftedBaseExpression(p:PropertyADD): LiftedBaseExpression?
-     LiftedChoiceExpression(pc:PresenceCondition, ae1:LiftedAnnotativeExpression, ae2:LiftedAnnotativeExpression): LiftedChoiceExpression?
-  END LiftedAnnotativeExpression
-
-  lift(ae:AnnotativeExpression): RECURSIVE LiftedAnnotativeExpression =
-    CASES ae OF
-      BaseExpression(p): LiftedBaseExpression(toADD(p)),
-      ChoiceExpression(pc, ae1, ae2): LiftedChoiceExpression(pc, lift(ae1), lift(ae2))
-    ENDCASES
-    MEASURE ae by <<
-
-  sigmaLift(vp:LiftedAnnotativeExpression,c:Conf): RECURSIVE PropertyADD =
-    CASES vp OF
-      LiftedBaseExpression(p): p,
-      LiftedChoiceExpression(pc, vp1, vp2):
-        IF c(pc) THEN
-	   sigmaLift(vp1,c)
-	ELSE
-	   sigmaLift(vp2,c)
-	ENDIF
-    ENDCASES
-    MEASURE vp by <<
-
-    %commutative_family_product: THEOREM sigmaLift( lift(hatAlpha(vModel)), conf) = alpha(pi(vModel,conf))
-
 
 END SPLTheory
