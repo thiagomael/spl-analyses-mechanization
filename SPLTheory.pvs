@@ -18,50 +18,51 @@ BEGIN
   AnnotativeModel : DATATYPE
   BEGIN
      ModelBase(m:Product): ModelBase?
-     ModelChoice(pc:PresenceCondition, vm1:AnnotativeModel, vm2:AnnotativeModel): ModelChoice?
+     ModelChoice(pc:PresenceCondition,
+                 vm1:AnnotativeModel,
+                 vm2:AnnotativeModel): ModelChoice?
   END AnnotativeModel
 
   pi(vm:AnnotativeModel,c:Conf): RECURSIVE Product =
     CASES vm OF
       ModelBase(m): m,
       ModelChoice(pc, vm1, vm2):
-        IF c(pc) THEN
-	   pi(vm1,c)
-	ELSE
-	   pi(vm2,c)
-	ENDIF
+        IF c(pc) THEN pi(vm1,c)
+	             ELSE pi(vm2,c)
+	    ENDIF
     ENDCASES
-    MEASURE vm by <<
+  MEASURE vm by <<
 
   AnnotativeExpression : DATATYPE
   BEGIN
      BaseExpression(p:Property): BaseExpression?
-     ChoiceExpression(pc:PresenceCondition, vp1:AnnotativeExpression, vp2:AnnotativeExpression): ChoiceExpression?
+     ChoiceExpression(pc:PresenceCondition,
+                      vp1:AnnotativeExpression,
+                      vp2:AnnotativeExpression): ChoiceExpression?
   END AnnotativeExpression  
 
   sigma(vp:AnnotativeExpression,c:Conf): RECURSIVE Property =
     CASES vp OF
       BaseExpression(p): p,
       ChoiceExpression(pc, vp1, vp2):
-        IF c(pc) THEN
-	   sigma(vp1,c)
-	ELSE
-	   sigma(vp2,c)
-	ENDIF
+        IF c(pc) THEN sigma(vp1,c)
+	             ELSE sigma(vp2,c)
+	    ENDIF
     ENDCASES
-    MEASURE vp by <<
+  MEASURE vp by <<
 
   hatAlpha(vm:AnnotativeModel): RECURSIVE AnnotativeExpression =
     CASES vm OF
       ModelBase(m): BaseExpression(alpha(m)),
-      ModelChoice(pc, vm1, vm2): ChoiceExpression( pc, hatAlpha(vm1), hatAlpha(vm2) )
+      ModelChoice(pc, vm1, vm2): ChoiceExpression(pc, hatAlpha(vm1), hatAlpha(vm2))
     ENDCASES
-    MEASURE vm by <<
+  MEASURE vm by <<
 
   conf: VAR Conf
   vModel, am : VAR AnnotativeModel
   l : VAR list[AnnotativeModel]
-  commutative_product_family_product: THEOREM sigma(hatAlpha(vModel),conf) = alpha(pi(vModel,conf))
+  commutative_product_family_product: THEOREM
+    sigma(hatAlpha(vModel),conf) = alpha(pi(vModel,conf))
 
   %% COMPOSITIONAL
 
@@ -71,7 +72,8 @@ BEGIN
   m1, m2 : VAR AnnotativeModel
   n : VAR nat
 
-  isomorphismModelExp: AXIOM hatAlpha(partialModelComposition(m1,m2)) = partialExpComposition(hatAlpha(m1),hatAlpha(m2))
+  isomorphismModelExp: AXIOM
+    hatAlpha(partialModelComposition(m1,m2)) = partialExpComposition(hatAlpha(m1),hatAlpha(m2))
 
 
 
@@ -81,25 +83,6 @@ BEGIN
   Pair : TYPE =  [# pc : PresenceCondition, idt : nat #]
 
 
-%% dependents - receber ID, retornar lista de pares (PresenceCondition, Id)
-
-%%%%%%%
-%  CompositionalThing[AnnotativeModel] : TYPE =
-%      [# idt : finite_sets[nat].finite_set,
-%         E : [nat->AnnotativeModel],
-%	 ord : (orders[nat].well_founded?),
-%	 top : (idt) #]
-
-%CM A(top) B C-->D
-%[ (presenceConditionB , CM B), (presenceConditionC , CM C) ]
-
-%CM A --> CM B C (idt - A) 
-
-%%%%%%%
-
-%  dependentIds(cm:CompositionalModel, id : { n:nat | member(n,cm`idt) } ) : finite_sets[nat].finite_set =
-%    {n:nat | cm`ord(id,n)}
-  
   getPC(am) : PresenceCondition =
     CASES am OF
       ModelBase(m): truepc,
@@ -115,106 +98,111 @@ BEGIN
               EXISTS (pc: PresenceCondition, n: nat):
                 cm`ord(n, id) AND p`idt = n AND p`pc = getPCi(cm, n)} HAS_TYPE (is_finite[Pair])
 
-  %%TODO inverter ordem dos dependentes em cm`ord
-  %%trocar ordem na hora do generalize
-  dependentes(cm:CompositionalModel, id : { n:nat | member(n,cm`idt) } ) : finite_sets[Pair].finite_set =
+  dependentes(cm:CompositionalModel, id : {n:nat | member(n,cm`idt)} ) : finite_sets[Pair].finite_set =
     {p: Pair | EXISTS (pc:PresenceCondition, n:nat) : cm`ord(n,id) AND p`idt=n AND p`pc = getPCi(cm,n)}
 
   set2list(s: finite_sets[Pair].finite_set) : RECURSIVE {l:list[Pair] | length(l) = card(s) AND 
-				           FORALL(x:Pair): s(x) IFF member(x,l)} =
+				                                                        FORALL (x:Pair): s(x) IFF member(x,l)} =
     IF empty?(s) THEN null
-    ELSE cons( choose(s) , set2list(rest(s)) ) ENDIF
+                 ELSE cons(choose(s), set2list(rest(s)))
+    ENDIF
   MEASURE card(s)
 
-  dependents(cm:CompositionalModel, id : { n:nat | member(n,cm`idt) } ) : list[Pair] =
+  dependents(cm:CompositionalModel, id : {n:nat | member(n,cm`idt)} ) : list[Pair] =
     set2list(dependentes(cm,id))
 
-  memberDependents: LEMMA FORALL (cm:CompositionalModel, id : { n:nat | member(n,cm`idt) }, p:{x:Pair|member(x,dependents(cm,id))}): (EXISTS (pc:PresenceCondition, n:nat) : cm`ord(n,id) AND p`idt=n AND p`pc = getPCi(cm,n))
+  memberDependents: LEMMA
+    FORALL (cm: CompositionalModel,
+            id: {n: nat | member(n,cm`idt)},
+            p: {x: Pair | member(x,dependents(cm,id))}):
+        (EXISTS (pc:PresenceCondition, n:nat) : cm`ord(n,id) AND p`idt=n AND p`pc = getPCi(cm,n))
 
-%  foldls(f:[AnnotativeModel, AnnotativeModel -> AnnotativeModel], am:AnnotativeModel, s:finite_sets[AnnotativeModel].finite_set) :
-%    RECURSIVE AnnotativeModel =
-%    IF empty?(s) THEN am ELSE foldls(f, f(am, x), remove(x,s)) ENDIF  WHERE x = choose(s)
-%    MEASURE card(s)
 
-% fold[](f:[T, T -> T], elm:T, l:list[T]) : RECURSIVE T =
-%    CASES l OF
-%      null: elm,
-%      cons(x, xs): fold(f, f(elm,x), xs)
-%    ENDCASES
-%    MEASURE length(l)
-
-  foldl(f:[AnnotativeModel, AnnotativeModel -> AnnotativeModel], am:AnnotativeModel, l:list[AnnotativeModel]) : RECURSIVE AnnotativeModel =
+  foldl(f: [AnnotativeModel, AnnotativeModel -> AnnotativeModel],
+        am: AnnotativeModel,
+        l: list[AnnotativeModel]) : RECURSIVE AnnotativeModel =
     CASES l OF
       null: am,
       cons(x, xs): foldl(f, f(am,x), xs)
     ENDCASES
-    MEASURE length(l)
+  MEASURE length(l)
 
   
 
   pi_r(cm:CompositionalModel, idt:(cm`idt), c:Conf) : RECURSIVE Product =
     pi(
-	foldl(
-	      partialModelComposition,
-	      cm`E(idt),
-	      map(LAMBDA(p:{par:Pair|member(par,dependents(cm, idt))}):IF ( c(p`pc) ) THEN ModelBase(pi_r(cm, p`idt, c)) ELSE ModelBase(emptyproduct) ENDIF,
-	          dependents(cm, idt)
-	      )
-	),
+	    foldl(
+	        partialModelComposition,
+	        cm`E(idt),
+	        map(
+                LAMBDA(p: {par: Pair | member(par,dependents(cm, idt))}):
+                IF (c(p`pc)) THEN
+                    ModelBase(pi_r(cm, p`idt, c))
+                ELSE ModelBase(emptyproduct) ENDIF,
+	            dependents(cm, idt)
+	        )
+	    ),
         c
     )
-    MEASURE idt BY ord(cm)
+  MEASURE idt BY ord(cm)
 
   pi_(cm:CompositionalModel, c:Conf) : Product =
     pi_r(cm, cm`top, c)
 
   CompositionalExpression : TYPE  = CompositionalThing[AnnotativeExpression]
-  cExp,ce : VAR CompositionalExpression
+  cExp, ce : VAR CompositionalExpression
 
-  getPC(ae:AnnotativeExpression) : PresenceCondition =
+  getPC(ae: AnnotativeExpression) : PresenceCondition =
     CASES ae OF
       BaseExpression(p): truepc,
       ChoiceExpression(pc, vm1, vm2): pc
     ENDCASES
 
-  getPCi(ce:CompositionalExpression, id : { n:nat | member(n,ce`idt) }) : PresenceCondition =
+  getPCi(ce: CompositionalExpression, id: {n:nat | member(n,ce`idt)}) : PresenceCondition =
     getPC(ce`E(id))
 
   finitePairsExp: JUDGEMENT
-  FORALL (ce:CompositionalExpression,id : { n:nat | member(n,ce`idt) } ):
-  {p: Pair |
-              EXISTS (pc: PresenceCondition, n: nat):
-                ce`ord(n, id) AND p`idt = n AND p`pc = getPCi(ce, n)} HAS_TYPE (is_finite[Pair])
+    FORALL (ce: CompositionalExpression, id: {n:nat | member(n,ce`idt)}):
+      {p: Pair | EXISTS (pc: PresenceCondition, n: nat): ce`ord(n, id) AND p`idt = n AND p`pc = getPCi(ce, n)}
+          HAS_TYPE (is_finite[Pair])
 
   dependentesExp(ce:CompositionalExpression, id : { n:nat | member(n,ce`idt) } ) : finite_sets[Pair].finite_set =
-    {p: Pair | EXISTS (pc:PresenceCondition, n:nat) : ce`ord(n,id) AND p`idt=n AND p`pc = getPCi(ce,n)}
+    {p: Pair | EXISTS (pc:PresenceCondition, n:nat) : ce`ord(n,id) AND p`idt = n AND p`pc = getPCi(ce,n)}
 
-  dependentsExp(ce:CompositionalExpression, id : { n:nat | member(n,ce`idt) } ) : list[Pair] =
+  dependentsExp(ce:CompositionalExpression, id: {n:nat | member(n,ce`idt)}) : list[Pair] =
     set2list(dependentesExp(ce,id))
 
-  memberDependentsExp: LEMMA FORALL (ce:CompositionalExpression, id : { n:nat | member(n,ce`idt) }, p:{x:Pair|member(x,dependentsExp(ce,id))}): (EXISTS (pc:PresenceCondition, n:nat) : ce`ord(n,id) AND p`idt=n AND p`pc = getPCi(ce,n))
+  memberDependentsExp: LEMMA
+    FORALL (ce: CompositionalExpression, id: {n:nat | member(n,ce`idt)}, p:{ x:Pair | member(x,dependentsExp(ce,id))}):
+        (EXISTS (pc: PresenceCondition, n: nat) : ce`ord(n,id) AND p`idt = n AND p`pc = getPCi(ce,n))
 
-  foldlExp(f:[AnnotativeExpression, AnnotativeExpression -> AnnotativeExpression], ae:AnnotativeExpression, l:list[AnnotativeExpression]) : RECURSIVE AnnotativeExpression =
+  foldlExp(f: [AnnotativeExpression, AnnotativeExpression -> AnnotativeExpression],
+           ae: AnnotativeExpression,
+           l: list[AnnotativeExpression]) : RECURSIVE AnnotativeExpression =
     CASES l OF
       null: ae,
       cons(x, xs): foldlExp(f, f(ae,x), xs)
     ENDCASES
-    MEASURE length(l)
+  MEASURE length(l)
 
-  sigma_r(ce:CompositionalExpression, idt:(ce`idt), c:Conf) : RECURSIVE Property =
+  sigma_r(ce: CompositionalExpression, idt: (ce`idt), c: Conf) : RECURSIVE Property =
     sigma(
-	foldlExp(
-	      partialExpComposition,
-	      ce`E(idt),
-	      map(LAMBDA(p:{par:Pair|member(par,dependentsExp(ce, idt))}):IF ( c(p`pc) ) THEN BaseExpression(sigma_r(ce, p`idt, c)) ELSE BaseExpression(emptyproperty) ENDIF,
-	          dependentsExp(ce, idt)
-	      )
-	),
+	    foldlExp(
+	        partialExpComposition,
+	        ce`E(idt),
+	        map(
+                LAMBDA(p: {par: Pair | member(par,dependentsExp(ce, idt))}):
+                  IF (c(p`pc)) THEN BaseExpression(sigma_r(ce, p`idt, c))
+                               ELSE BaseExpression(emptyproperty)
+                  ENDIF,
+	            dependentsExp(ce, idt)
+	        )
+	    ),
         c
     )
-    MEASURE idt BY ord(ce)
+  MEASURE idt BY ord(ce)
 
-  sigma_(ce:CompositionalExpression, c:Conf) : Property =
+  sigma_(ce: CompositionalExpression, c: Conf) : Property =
     sigma_r(ce, ce`top, c)
 
 
@@ -243,23 +231,26 @@ BEGIN
       AND
       (FORALL(p:Pair):member(p,ls) IMPLIES member(p`idt, cm`idt) AND cm`ord(p`idt,x))
       IMPLIES
-      map(LAMBDA (p:
-                    {par: Pair |
-                             member(par,ls)}):
-            IF (c(p`pc))
-              THEN BaseExpression(sigma_r(fmap(hatAlpha, cm), p`idt, c))
-            ELSE BaseExpression(emptyproperty)
-            ENDIF,
-          ls)
-       =
-       map(hatAlpha,
-           map(LAMBDA (p: {par: Pair | member(par, ls)}):
-                 IF (c(p`pc)) THEN ModelBase(pi_r(cm, p`idt, c))
-                 ELSE ModelBase(emptyproduct)
-                 ENDIF,
-               ls))
+          map(
+              LAMBDA (p: {par: Pair | member(par,ls)}):
+                IF (c(p`pc)) THEN BaseExpression(sigma_r(fmap(hatAlpha, cm), p`idt, c))
+                             ELSE BaseExpression(emptyproperty)
+                ENDIF,
+              ls
+          )
+           =
+          map(hatAlpha,
+              map(
+                  LAMBDA (p: {par: Pair | member(par, ls)}):
+                    IF (c(p`pc)) THEN ModelBase(pi_r(cm, p`idt, c))
+                                 ELSE ModelBase(emptyproduct)
+                    ENDIF,
+                  ls
+              )
+          )
 
-  commutative_feature_product_product: THEOREM sigma_(analyzeCM(cModel), conf) = alpha(pi_(cModel, conf))
+  commutative_feature_product_product: THEOREM
+    sigma_(analyzeCM(cModel), conf) = alpha(pi_(cModel, conf))
 
   %% FAMILY - ANNOTATIVE
 

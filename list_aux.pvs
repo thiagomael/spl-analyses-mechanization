@@ -1,7 +1,5 @@
-list_aux_map [ T1, T2: TYPE ]
-		: THEORY
-
-  BEGIN
+list_aux_map [ T1, T2: TYPE ]: THEORY
+BEGIN
 
   IMPORTING list[T1]
 
@@ -17,12 +15,10 @@ list_aux_map [ T1, T2: TYPE ]
             IMPLIES
           map(f1, l) = map(f2, l)
 
-  END list_aux_map
+END list_aux_map
 
-list_aux_map_props [ T1, T2, T3: TYPE ]
-		: THEORY
-
-  BEGIN
+list_aux_map_props [ T1, T2, T3: TYPE ]: THEORY
+BEGIN
 
   IMPORTING list_aux_map
 
@@ -32,12 +28,10 @@ list_aux_map_props [ T1, T2, T3: TYPE ]
               f2: [T2->T3]):
           map(f2, map(f1, l)) = map(f2 o f1, l)
 
-  END list_aux_map_props
+END list_aux_map_props
 
-list_map_type_compatibility [ T1, T2: TYPE, TT1: TYPE FROM T1 ]
-		: THEORY
-
-  BEGIN
+list_map_type_compatibility [ T1, T2: TYPE, TT1: TYPE FROM T1 ]: THEORY
+BEGIN
 
   IMPORTING list
 
@@ -54,4 +48,4 @@ list_map_type_compatibility [ T1, T2: TYPE, TT1: TYPE FROM T1 ]
             IMPLIES
           map[T1, T2](f, l) = map[TT1, T2](f, l)
 
-  END list_map_type_compatibility
+END list_map_type_compatibility
